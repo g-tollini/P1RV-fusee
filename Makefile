@@ -1,0 +1,46 @@
+BUILDPATH = ~/centrale/robotique/fusee/build/
+SIMPATH = ~/centrale/robotique/fusee/simulator/
+SIMNPATH = ~/centrale/robotique/fusee/simulator/simulation/
+GUIPATH = ~/centrale/robotique/fusee/interface/
+ARDUINOPATH = ~/centrale/robotique/fusee/simulator/arduino/fusee/
+MYARDUINOPATH = ~/centrale/robotique/fusee/simulator/arduino/my_arduino_layer/
+USRLIBPATH = /usr/lib/x86_64-linux-gnu/
+EXTLIBPATH = ~/centrale/robotique/fusee/external/
+
+all : $(BUILDPATH)interface.out $(BUILDPATH)simulator.out
+
+sim : $(BUILDPATH)arduinolib.so
+
+$(BUILDPATH)interface.out : $(BUILDPATH)interface.o
+	g++ -o $(BUILDPATH)interface.out $(BUILDPATH)interface.o $(USRLIBPATH)libGL.so $(USRLIBPATH)libglut.so
+
+$(BUILDPATH)interface.o : $(GUIPATH)interface.cpp
+	g++ -c $(GUIPATH)interface.cpp -o $(BUILDPATH)interface.o
+
+# Le simulateur
+
+$(BUILDPATH)simulator.out : $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(BUILDPATH)arduinomain.o $(BUILDPATH)arduinolib.so $(SIMPATH)threading.hpp
+	g++ -o $(BUILDPATH)simulator.out $(BUILDPATH)arduinolib.so $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(USRLIBPATH)libpthread.so.0
+
+$(BUILDPATH)simulator.o : $(SIMPATH)simulator.cpp
+	g++ -c $(SIMPATH)simulator.cpp -o $(BUILDPATH)simulator.o
+	
+$(BUILDPATH)simulation.o : $(SIMNPATH)simulation.cpp $(SIMNPATH)simulation.hpp
+	g++ -c  $(SIMNPATH)simulation.cpp -o $(BUILDPATH)simulation.o
+
+$(BUILDPATH)arduinolib.so : $(BUILDPATH)arduinomain.o $(BUILDPATH)fusee.o $(BUILDPATH)serial.o
+	g++ -o $@ -shared $(BUILDPATH)arduinomain.o $(BUILDPATH)fusee.o $(BUILDPATH)serial.o -fPIC
+
+$(BUILDPATH)arduinomain.o : $(MYARDUINOPATH)arduinomain.cpp $(MYARDUINOPATH)myarduino.hpp $(BUILDPATH)fusee.o
+	g++ -c $(MYARDUINOPATH)arduinomain.cpp -o $(BUILDPATH)arduinomain.o -fPIC
+
+$(BUILDPATH)fusee.o : $(ARDUINOPATH)fusee.ino $(MYARDUINOPATH)myarduino.hpp
+	cp $(ARDUINOPATH)fusee.ino $(ARDUINOPATH)fusee.cpp
+	g++ -c $(ARDUINOPATH)fusee.cpp -D SIM -o $(BUILDPATH)fusee.o -fPIC
+	rm $(ARDUINOPATH)fusee.cpp
+
+$(BUILDPATH)serial.o : $(MYARDUINOPATH)serial/myserial.cpp $(MYARDUINOPATH)serial/myserial.hpp
+	g++ -c $(MYARDUINOPATH)serial/myserial.cpp -o $(BUILDPATH)serial.o -fPIC
+
+clean :
+	rm build/*
