@@ -21,7 +21,7 @@ $(BUILDPATH)interface.o : $(GUIPATH)interface.cpp
 # Le simulateur
 
 $(BUILDPATH)simulator.out : $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(BUILDPATH)arduinolib.so $(SIMPATH)threading.hpp $(BUILDPATH)fusee.o $(BUILDPATH)serial.o
-	g++ -o $(BUILDPATH)simulator.out $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(BUILDPATH)arduinolib.so $(BUILDPATH)fusee.o $(BUILDPATH)serial.o $(USRLIBPATH)libpthread.so.0
+	g++ -o $(BUILDPATH)simulator.out $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(BUILDPATH)arduinolib.so $(BUILDPATH)fusee.o $(BUILDPATH)serial.o $(USRLIBPATH)libpthread.so
 
 $(BUILDPATH)simulator.o : $(SIMPATH)simulator.cpp
 	g++ -c $(SIMPATH)simulator.cpp -o $(BUILDPATH)simulator.o
