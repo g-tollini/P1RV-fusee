@@ -11,6 +11,8 @@ all : $(BUILDPATH)interface.out $(BUILDPATH)simulator.out
 
 sim : $(BUILDPATH)arduinolib.so
 
+# L'interface
+
 $(BUILDPATH)interface.out : $(BUILDPATH)interface.o
 	g++ -o $(BUILDPATH)interface.out $(BUILDPATH)interface.o $(USRLIBPATH)libGL.so $(USRLIBPATH)libglut.so
 
