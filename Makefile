@@ -5,7 +5,6 @@ GUIPATH = interface/
 ARDUINOPATH = simulator/arduino/fusee/
 MYARDUINOPATH = simulator/arduino/my_arduino_layer/
 USRLIBPATH = /usr/lib/x86_64-linux-gnu/
-EXTLIBPATH = external/
 
 all : $(BUILDPATH)interface.out $(BUILDPATH)simulator.out
 
@@ -21,7 +20,7 @@ $(BUILDPATH)interface.o : $(GUIPATH)interface.cpp
 
 # Le simulateur
 
-$(BUILDPATH)simulator.out : $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(BUILDPATH)arduinomain.o $(BUILDPATH)arduinolib.so $(SIMPATH)threading.hpp
+$(BUILDPATH)simulator.out : $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(BUILDPATH)arduinolib.so $(SIMPATH)threading.hpp
 	g++ -o $(BUILDPATH)simulator.out $(BUILDPATH)arduinolib.so $(BUILDPATH)simulator.o $(BUILDPATH)simulation.o $(USRLIBPATH)libpthread.so.0
 
 $(BUILDPATH)simulator.o : $(SIMPATH)simulator.cpp
@@ -33,7 +32,7 @@ $(BUILDPATH)simulation.o : $(SIMNPATH)simulation.cpp $(SIMNPATH)simulation.hpp
 $(BUILDPATH)arduinolib.so : $(BUILDPATH)arduinomain.o $(BUILDPATH)fusee.o $(BUILDPATH)serial.o
 	g++ -o $@ -shared $(BUILDPATH)arduinomain.o $(BUILDPATH)fusee.o $(BUILDPATH)serial.o -fPIC
 
-$(BUILDPATH)arduinomain.o : $(MYARDUINOPATH)arduinomain.cpp $(MYARDUINOPATH)myarduino.hpp $(BUILDPATH)fusee.o
+$(BUILDPATH)arduinomain.o : $(MYARDUINOPATH)arduinomain.cpp $(MYARDUINOPATH)myarduino.hpp
 	g++ -c $(MYARDUINOPATH)arduinomain.cpp -o $(BUILDPATH)arduinomain.o -fPIC
 
 $(BUILDPATH)fusee.o : $(ARDUINOPATH)fusee.ino $(MYARDUINOPATH)myarduino.hpp
@@ -45,4 +44,6 @@ $(BUILDPATH)serial.o : $(MYARDUINOPATH)serial/myserial.cpp $(MYARDUINOPATH)seria
 	g++ -c $(MYARDUINOPATH)serial/myserial.cpp -o $(BUILDPATH)serial.o -fPIC
 
 clean :
-	rm build/*
+	rm build/*.o
+	rm build/*.so
+	rm build/*.out
