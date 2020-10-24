@@ -16,7 +16,7 @@ void KeyboardHandler(unsigned char key, int xpix, int ypix)
     switch (key)
     {
     case 'a':
-        system("~/centrale/robotique/fusee/e.sh");
+        system("./e.sh");
         cout << "Simulation terminée" << endl;
         break;
     default:

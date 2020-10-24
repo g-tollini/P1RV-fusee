@@ -1,11 +1,11 @@
-BUILDPATH = ~/centrale/robotique/fusee/build/
-SIMPATH = ~/centrale/robotique/fusee/simulator/
-SIMNPATH = ~/centrale/robotique/fusee/simulator/simulation/
-GUIPATH = ~/centrale/robotique/fusee/interface/
-ARDUINOPATH = ~/centrale/robotique/fusee/simulator/arduino/fusee/
-MYARDUINOPATH = ~/centrale/robotique/fusee/simulator/arduino/my_arduino_layer/
+BUILDPATH = build/
+SIMPATH = simulator/
+SIMNPATH = simulator/simulation/
+GUIPATH = interface/
+ARDUINOPATH = simulator/arduino/fusee/
+MYARDUINOPATH = simulator/arduino/my_arduino_layer/
 USRLIBPATH = /usr/lib/x86_64-linux-gnu/
-EXTLIBPATH = ~/centrale/robotique/fusee/external/
+EXTLIBPATH = external/
 
 all : $(BUILDPATH)interface.out $(BUILDPATH)simulator.out
 
