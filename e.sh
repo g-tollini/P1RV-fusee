@@ -1,2 +1,3 @@
 make sim
-./build/simulator.out
+./build/simulator.out &
+echo "yo"

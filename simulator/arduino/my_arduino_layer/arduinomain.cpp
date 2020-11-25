@@ -1,5 +1,5 @@
 #include "myarduino.hpp"
-#include "../../threading.hpp"
+#include "../../../threading.hpp"
 
 SerialObj Serial(cout);
 
@@ -18,12 +18,13 @@ void delay(int ms)
 
 void *arduinoMain(void *pData)
 {
+    SharedMemory *shm = (SharedMemory *)pData;
     pthread_mutex_lock(arduinoMutex);
     setup();
 
     while (1)
     {
-        if (stop)
+        if (shm->simulationTerminated)
         {
             pthread_mutex_unlock(simulationMutex);
             pthread_exit(NULL);
