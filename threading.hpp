@@ -11,6 +11,8 @@
 #include <list>
 #include <cstring>
 
+#include "simulator/simulation/dynamic-model/parameters.hpp"
+
 using namespace std;
 
 #define SHM_FILE_NAME "/shm-fusee"
@@ -24,13 +26,33 @@ using namespace std;
  * different semaphore this problem si solved and both processes alternate
 */
 
-struct SharedMemory
+struct Vec3d
 {
-    bool simulationTerminated;
-    int t_ms;
-    double state[6];
+    double x;
+    double y;
+    double z;
 };
 
+/**
+ * @brief Structure of the shared memory segment
+ * 
+ */
+struct SharedMemory
+{
+    Model model;
+    Method method;
+    bool simulationTerminated;
+    int step_ms;
+    int t_ms;
+    Vec3d position;
+    Vec3d attitude;
+};
+
+/**
+ * @brief Sets the content of the shared memory segment to the initial values
+ * 
+ * @param shm 
+ */
 void SharedMemoryInit(SharedMemory *shm);
 
 /**

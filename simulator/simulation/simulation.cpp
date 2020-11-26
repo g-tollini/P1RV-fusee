@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "simulation.hpp"
+#include "dynamic-model/dynamic-model.hpp"
 
 using namespace std;
 
@@ -33,10 +34,36 @@ void *simulationMainLoop(void *pData)
         exit(1);
     }
 
-    // if (sem_wait(semSimulator) != 0)
-    // {
-    //     cout << " semSImulator P error" << endl;
-    // }
+    DynamicModel *pDynMod;
+    switch (shm->model)
+    {
+    case Cardan:
+        pDynMod = new CardanModel();
+        break;
+    case Quaternions:
+        pDynMod = new QuaternionsModel();
+        break;
+    default:
+        pDynMod = new CardanModel();
+        break;
+    }
+
+    Solver *pSolver;
+    switch (shm->method)
+    {
+    case methodEuler:
+        pSolver = new Euler();
+        break;
+    case methodRK4:
+        pSolver = new RungeKutta4();
+        break;
+    default:
+        pSolver = new Euler();
+        break;
+    }
+
+    state_t *pState;
+    InitState(pState);
 
     while (true)
     {
@@ -67,9 +94,12 @@ void *simulationMainLoop(void *pData)
                 }
                 // Manipulate the shared memory (only) here. Be careful about thread calls
 
-                int dt = sim_step_ms < sim_untill_ms ? sim_step_ms : sim_untill_ms;
-                sim_untill_ms -= dt;
-                shm->t_ms += dt;
+                int step_ms = sim_step_ms < sim_untill_ms ? sim_step_ms : sim_untill_ms;
+                sim_untill_ms -= step_ms;
+
+                pSolver->ComputeNextStep(pDynMod, pState, step_ms);
+
+                shm->t_ms += step_ms;
 
                 if (int e = sem_post(semInterface) != 0)
                 {
