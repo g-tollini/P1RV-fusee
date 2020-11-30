@@ -1,6 +1,7 @@
 #pragma once
 
 #include "parameters.hpp"
+#include "dynamic-model.hpp"
 
 /**
  * @brief Computes the state as it will be in step_ms milliseconds

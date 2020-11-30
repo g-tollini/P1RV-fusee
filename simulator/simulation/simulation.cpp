@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "../../threading.hpp"
 #include "simulation.hpp"
 #include "dynamic-model/dynamic-model.hpp"
 

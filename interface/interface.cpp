@@ -25,7 +25,7 @@ void KeyboardHandler(unsigned char key, int xpix, int ypix)
     case 'a':
         nb_echanges = 0;
         SharedMemoryInit(shm);
-        system("./e.sh");
+        system("cd ../../simulator && cmake . && ./../build/simulator/P1RV-fusee-simulator");
         cout << "Simulation lancée" << endl;
         if (sem_post(semSimulator) != 0)
         {

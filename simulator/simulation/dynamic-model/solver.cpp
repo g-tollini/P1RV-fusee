@@ -1,5 +1,5 @@
 #include "solver.hpp"
-#include "dynamic-model/dynamic-model.hpp"
+#include "dynamic-model.hpp"
 
 void Euler::ComputeNextStep(DynamicModel *pDynMod, state_t *pState, int step_ms)
 {

@@ -29,7 +29,4 @@ public:
  * 
  * @param pState 
  */
-void InitState(state_t *pState)
-{
-    // TODO
-}
+void InitState(state_t *pState);
