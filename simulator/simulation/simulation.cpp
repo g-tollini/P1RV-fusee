@@ -3,6 +3,9 @@
 #include "../../threading.hpp"
 #include "simulation.hpp"
 #include "dynamic-model/dynamic-model.hpp"
+#include "dynamic-model/simple-model.hpp"
+#include "dynamic-model/cardan-model.hpp"
+#include "dynamic-model/quaternions-model.hpp"
 
 using namespace std;
 
@@ -15,24 +18,28 @@ using namespace std;
 void *simulationMainLoop(void *pData)
 {
     SharedMemory *shm = (SharedMemory *)pData;
-
+    sem_t *semInterface;
+    sem_t *semSimulator;
     // Opens posix semaphores
-    sem_t *semInterface = sem_open(SEM_INTERFACE_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
-    if (semInterface == SEM_FAILED)
+    if (shm->interfaceOn)
     {
-        cout << "Semaphore opening failed" << endl;
+        semInterface = sem_open(SEM_INTERFACE_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
+        if (semInterface == SEM_FAILED)
+        {
+            cout << "Semaphore opening failed" << endl;
 
-        errnoPrint();
-        exit(1);
-    }
+            errnoPrint();
+            exit(1);
+        }
 
-    sem_t *semSimulator = sem_open(SEM_SIMULATOR_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
-    if (semSimulator == SEM_FAILED)
-    {
-        cout << "Semaphore opening failed" << endl;
+        semSimulator = sem_open(SEM_SIMULATOR_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
+        if (semSimulator == SEM_FAILED)
+        {
+            cout << "Semaphore opening failed" << endl;
 
-        errnoPrint();
-        exit(1);
+            errnoPrint();
+            exit(1);
+        }
     }
 
     DynamicModel *pDynMod;
@@ -45,7 +52,7 @@ void *simulationMainLoop(void *pData)
         pDynMod = new QuaternionsModel();
         break;
     default:
-        pDynMod = new CardanModel();
+        pDynMod = new SimpleModel();
         break;
     }
 
@@ -53,31 +60,35 @@ void *simulationMainLoop(void *pData)
     switch (shm->method)
     {
     case methodEuler:
-        pSolver = new Euler();
+        pSolver = new Euler(shm);
         break;
     case methodRK4:
-        pSolver = new RungeKutta4();
+        pSolver = new RungeKutta4(shm);
         break;
     default:
-        pSolver = new Euler();
+        pSolver = new Euler(shm);
         break;
     }
 
-    state_t *pState;
-    InitState(pState);
-
     while (true)
     {
+        cout << "ici" << endl;
+        pthread_mutex_lock(simulationMutex);
+        cout << "ici" << endl;
         shm->simulationTerminated |= shm->t_ms > 500;
         if (shm->simulationTerminated)
         {
-            pthread_mutex_unlock(arduinoMutex);
-            if (int e = sem_post(semSimulator) != 0)
+            cout << "stop" << endl;
+            if (shm->interfaceOn)
             {
-                cout << " semSimulator V error code : " << e << endl;
+                sem_close(semInterface);
+                sem_close(semSimulator);
+                if (int e = sem_post(semInterface) != 0)
+                {
+                    cout << " semInterface V error code : " << e << endl;
+                }
             }
-            sem_close(semInterface);
-            sem_close(semSimulator);
+            pthread_mutex_unlock(arduinoMutex);
             return NULL;
         }
         else
@@ -89,28 +100,29 @@ void *simulationMainLoop(void *pData)
             }
             if (sim_untill_ms > 0)
             {
-                if (int e = sem_wait(semSimulator) != 0)
-                {
-                    cout << " semSimulator P error code : " << e << endl;
-                }
-                // Manipulate the shared memory (only) here. Be careful about thread calls
+                // Be careful about thread calls like cout
 
                 int step_ms = sim_step_ms < sim_untill_ms ? sim_step_ms : sim_untill_ms;
                 sim_untill_ms -= step_ms;
 
-                pSolver->ComputeNextStep(pDynMod, pState, step_ms);
+                // pSolver->ComputeNextStep(step_ms);
 
                 shm->t_ms += step_ms;
-
-                if (int e = sem_post(semInterface) != 0)
-                {
-                    cout << " semInterface V error code : " << e << endl;
-                }
             }
             else
             {
                 pthread_mutex_unlock(arduinoMutex);
-                pthread_mutex_lock(simulationMutex);
+                if (shm->interfaceOn)
+                {
+                    if (int e = sem_post(semInterface) != 0)
+                    {
+                        cout << " semInterface V error code : " << e << endl;
+                    }
+                    if (int e = sem_wait(semSimulator) != 0)
+                    {
+                        cout << " semSimulator P error code : " << e << endl;
+                    }
+                }
             }
         }
     }

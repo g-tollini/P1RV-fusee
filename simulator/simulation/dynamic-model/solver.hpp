@@ -2,14 +2,7 @@
 
 #include "parameters.hpp"
 #include "dynamic-model.hpp"
-
-/**
- * @brief Computes the state as it will be in step_ms milliseconds
- * 
- * @param pState 
- * @param step_ms 
- */
-void Solve(state_t *pState, int step_ms);
+#include "../../../threading.hpp"
 
 /**
  * @brief Contains the method used to solve the problem (ex : Euler, RK4, ...)
@@ -18,10 +11,15 @@ void Solve(state_t *pState, int step_ms);
 class Solver
 {
 public:
-    virtual void ComputeNextStep(DynamicModel *pDynMod, state_t *pState, int step_ms) = 0;
+    Solver(SharedMemory *_pShm) { pShm = _pShm; };
+    int ReadInput(void);
+    void WriteOutput(Vec3d const &position, Vec3d const &attitude);
+    virtual void ComputeNextStep(int step_ms) = 0;
     Method method;
 
-private:
+protected:
+    DynamicModel *pDynMod;
+    SharedMemory *pShm;
 };
 
 /**
@@ -31,7 +29,8 @@ private:
 class Euler : public Solver
 {
 public:
-    void ComputeNextStep(DynamicModel *pDynMod, state_t *pState, int step_ms);
+    Euler(SharedMemory *_pShm) : Solver(_pShm){};
+    void ComputeNextStep(int step_ms);
 };
 
 /**
@@ -41,5 +40,6 @@ public:
 class RungeKutta4 : public Solver
 {
 public:
-    void ComputeNextStep(DynamicModel *pDynMod, state_t *pState, int step_ms);
+    RungeKutta4(SharedMemory *_pShm) : Solver(_pShm){};
+    void ComputeNextStep(int step_ms);
 };

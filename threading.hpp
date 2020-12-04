@@ -39,6 +39,7 @@ struct Vec3d
  */
 struct SharedMemory
 {
+    bool interfaceOn = false;
     Model model;
     Method method;
     bool simulationTerminated;

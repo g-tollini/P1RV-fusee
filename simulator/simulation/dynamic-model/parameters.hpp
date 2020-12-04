@@ -1,10 +1,6 @@
 #pragma once
 
-/**
- * @brief Type of the state. May vary so define it here then only use state_t
- * 
- */
-typedef int state_t;
+#include </usr/share/eigen-3.3.8/Eigen/Eigen>
 
 /**
  * @brief 
@@ -12,8 +8,9 @@ typedef int state_t;
  */
 enum Model
 {
-    Cardan = 0,
-    Quaternions = 1
+    Simple = 0,
+    Cardan = 1,
+    Quaternions = 2
 };
 
 /**

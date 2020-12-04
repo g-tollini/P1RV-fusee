@@ -28,6 +28,8 @@ pthread_mutex_t *simulationMutex = new pthread_mutex_t();
  */
 pthread_mutex_t *arduinoMutex = new pthread_mutex_t();
 
+bool interfaceOn = false;
+
 /**
  * @brief Creates 2 threads and runs them : 1 for the computation of the state, 1 for the execution of the arduino code
  * 
@@ -37,35 +39,42 @@ pthread_mutex_t *arduinoMutex = new pthread_mutex_t();
  */
 int main(int argc, char *argv[])
 {
-    // Creates a file descriptor
-    int segmentFileDescriptor = shm_open(SHM_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
-    cout << "Code shm_open : " << segmentFileDescriptor << endl;
-    if (segmentFileDescriptor == -1)
-    {
-        exit(1);
-    }
-
     // Posix function that sets the size of the shared memory
     SharedMemory *shm;
 
-    // Opens posix shared memory
-    off_t memOffset = 0;
-    void *shmPtr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, segmentFileDescriptor, memOffset);
-    shm = (SharedMemory *)shmPtr;
+    if (interfaceOn)
+    {
+        //Creates a file descriptor
+        int segmentFileDescriptor = shm_open(SHM_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
+        cout << "Code shm_open : " << segmentFileDescriptor << endl;
+        if (segmentFileDescriptor == -1)
+        {
+            exit(1);
+        }
+
+        // Opens posix shared memory
+        off_t memOffset = 0;
+        void *shmPtr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, segmentFileDescriptor, memOffset);
+        shm = (SharedMemory *)shmPtr;
+        shm->interfaceOn = interfaceOn;
+    }
+    else
+    {
+        cout << "Interface off" << endl;
+    }
 
     pthread_mutex_init(simulationMutex, NULL);
     pthread_mutex_init(arduinoMutex, NULL);
     pthread_mutex_lock(simulationMutex);
     pthread_t simulationThread;
-    pthread_mutex_lock(arduinoMutex);
     pthread_t arduinoThread;
-    if (pthread_create(&simulationThread, NULL, simulationMainLoop, shm) != 0)
+    if (pthread_create(&simulationThread, NULL, simulationMainLoop, NULL) != 0)
     {
         cout << "Echec de la création du thread simulation" << endl;
         exit(1);
     }
     cout << "Thread simulation créé" << endl;
-    if (pthread_create(&arduinoThread, NULL, arduinoMain, shm) != 0)
+    if (pthread_create(&arduinoThread, NULL, arduinoMain, NULL) != 0)
     {
         cout << "Echec de la création du thread arduino" << endl;
         exit(1);

@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("P1RV - Fusee");
-    glutDisplayFunc(HandleDisplay);
+    // glutDisplayFunc(HandleDisplay);
     glutKeyboardFunc(KeyboardHandler);
 
     // Creates a file descriptor
@@ -78,6 +78,9 @@ int main(int argc, char **argv)
     off_t memOffset = 0;
     void *shmPtr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, segmentFileDescriptor, memOffset);
     shm = (SharedMemory *)shmPtr;
+
+    shm->model = Model::Simple;
+    shm->method = Method::methodEuler;
 
     // Creates posix semaphores
     sem_unlink(SEM_INTERFACE_FILE_NAME);
@@ -118,9 +121,9 @@ void *printSimulationData(void *pData)
         {
             cout << " semInterface P error code : " << e << endl;
         }
-
-        t_ms_2 = t_ms_1;
-        memcpy(&t_ms_1, &shm->t_ms, sizeof(t_ms_1));
+        shm->t_ms = 100;
+        cout << shm->position.z;
+        sleep(0.1);
 
         if (t_ms_1 == t_ms_2)
         {
