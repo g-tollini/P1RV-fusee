@@ -16,6 +16,8 @@ sem_t *semSimulator;
 
 int nb_echanges;
 
+bool simulationInProcess = false;
+
 void *printSimulationData(void *pData);
 
 void KeyboardHandler(unsigned char key, int xpix, int ypix)
@@ -32,6 +34,7 @@ void KeyboardHandler(unsigned char key, int xpix, int ypix)
         {
             cout << "semSimulator V error" << endl;
         }
+        simulationInProcess = true;
         break;
     case 'e':
         if (!shm->simulationTerminated)
@@ -56,21 +59,32 @@ void KeyboardHandler(unsigned char key, int xpix, int ypix)
 
 void HandleDisplay()
 {
-    if (int e = sem_wait(semInterface) != 0)
-    {
-        cout << " semInterface P error code : " << e << endl;
-    }
-    // Manipulate the shared memory (only) here. Be careful about thread calls
-
-    if (int e = sem_post(semSimulator) != 0)
-    {
-        cout << " semSimulator V error code : " << e << endl;
-    }
 }
 
 void TimerHandler(int value)
 {
+    if (simulationInProcess)
+    {
+        if (int e = sem_wait(semInterface) != 0)
+        {
+            cout << " semInterface P error code : " << e << endl;
+        }
+        // Manipulate the shared memory (only) here. Be careful about thread calls
+
+        cout << "t_ms = " << shm->t_ms << " ms" << endl;
+
+        if (int e = sem_post(semSimulator) != 0)
+        {
+            cout << " semSimulator V error code : " << e << endl;
+        }
+
+        if (shm->simulationTerminated)
+        {
+            simulationInProcess = false;
+        }
+    }
     glutPostRedisplay();
+    glutTimerFunc(100, TimerHandler, 0);
     return;
 }
 
@@ -83,6 +97,7 @@ int main(int argc, char **argv)
     glutCreateWindow("P1RV - Fusee");
     glutDisplayFunc(HandleDisplay);
     glutKeyboardFunc(KeyboardHandler);
+    glutTimerFunc(100, TimerHandler, 0);
 
     // Creates a file descriptor
     shm_unlink(SHM_FILE_NAME);

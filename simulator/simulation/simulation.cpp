@@ -114,18 +114,19 @@ void *simulationMainLoop(void *pData)
             else
             {
                 pthread_mutex_unlock(pSd->arduinoMutex);
-                if (pSd->pShm->interfaceOn)
-                {
-                    if (int e = sem_post(semInterface) != 0)
-                    {
-                        cout << " semInterface V error code : " << e << endl;
-                    }
-                    if (int e = sem_wait(semSimulator) != 0)
-                    {
-                        cout << " semSimulator P error code : " << e << endl;
-                    }
-                }
                 pthread_mutex_lock(pSd->simulationMutex);
+            }
+
+            if (pSd->pShm->interfaceOn)
+            {
+                if (int e = sem_post(semInterface) != 0)
+                {
+                    cout << " semInterface V error code : " << e << endl;
+                }
+                if (int e = sem_wait(semSimulator) != 0)
+                {
+                    cout << " semSimulator P error code : " << e << endl;
+                }
             }
         }
     }
