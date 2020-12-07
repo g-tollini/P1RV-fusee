@@ -1,6 +1,6 @@
 
 #ifdef SIM
-#include "../my_arduino_layer/myarduino.hpp"
+#include "../myarduino.hpp"
 #endif
 
 void setup()
@@ -16,5 +16,4 @@ void loop()
   delay(111); // arbitrary delay
   // put your main code here, to run repeatedly:
 }
-
 

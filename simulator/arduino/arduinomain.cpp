@@ -2,31 +2,33 @@
 #include "../../threading.hpp"
 
 SerialObj Serial(cout);
+SimulationData *pSd;
 
-void delay(int ms)
+void delay(int delay_ms)
 {
-    sim_untill_ms = ms;
-    pthread_mutex_unlock(simulationMutex);
-    pthread_mutex_lock(arduinoMutex);
+    pSd->sim_untill_ms = delay_ms;
     string s = "Attendre ";
-    s.append(to_string(ms));
+    s.append(to_string(delay_ms));
     s.append(" ms");
-    sharedBuffer->push_back(s);
+    pSd->sharedBuffer->push_back(s);
+    pthread_mutex_unlock(pSd->simulationMutex);
+    pthread_mutex_lock(pSd->arduinoMutex);
 
     return;
 }
 
 void *arduinoMain(void *pData)
 {
-    SharedMemory *shm = (SharedMemory *)pData;
-    pthread_mutex_lock(arduinoMutex);
+    pSd = (SimulationData *)pData;
+    Serial.SetSimulationData(pSd);
+    pthread_mutex_lock(pSd->arduinoMutex);
     setup();
 
     while (1)
     {
-        if (shm->simulationTerminated)
+        if (pSd->pShm->simulationTerminated)
         {
-            pthread_mutex_unlock(simulationMutex);
+            pthread_mutex_unlock(pSd->simulationMutex);
             pthread_exit(NULL);
         }
         else

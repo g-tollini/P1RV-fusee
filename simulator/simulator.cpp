@@ -5,28 +5,7 @@
 
 using namespace std;
 
-volatile int sim_untill_ms = 0;
-volatile int sim_since_ms = 0;
-volatile int sim_step_ms = 20;
-
-/**
- * @brief Set this to true and unlock the simulationMutex to end the simulation infinite loop
- * 
- */
-bool stop = false;
-
-list<string> *sharedBuffer = new list<string>();
-
-/**
- * @brief Is locked if and only if the simulation is running
- * 
- */
-pthread_mutex_t *simulationMutex = new pthread_mutex_t();
-/**
- * @brief Is locked if and only if the arduino code is executing
- * 
- */
-pthread_mutex_t *arduinoMutex = new pthread_mutex_t();
+int SimulationDataInit(SimulationData *_pSd);
 
 bool interfaceOn = false;
 
@@ -39,8 +18,20 @@ bool interfaceOn = false;
  */
 int main(int argc, char *argv[])
 {
-    // Posix function that sets the size of the shared memory
-    SharedMemory *shm;
+    SimulationData *pSd = new SimulationData;
+    SimulationDataInit(pSd);
+
+    SharedMemory *pShm = new SharedMemory;
+
+    bool interfaceOn = false;
+
+    for (int i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-gui") == 0)
+        {
+            interfaceOn = true;
+        }
+    }
 
     if (interfaceOn)
     {
@@ -55,43 +46,60 @@ int main(int argc, char *argv[])
         // Opens posix shared memory
         off_t memOffset = 0;
         void *shmPtr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, segmentFileDescriptor, memOffset);
-        shm = (SharedMemory *)shmPtr;
-        shm->interfaceOn = interfaceOn;
+        pSd->pShm = (SharedMemory *)shmPtr;
     }
     else
     {
         cout << "Interface off" << endl;
+        pSd->pShm->step_ms = 20;
     }
 
-    pthread_mutex_init(simulationMutex, NULL);
-    pthread_mutex_init(arduinoMutex, NULL);
-    pthread_mutex_lock(simulationMutex);
-    pthread_t simulationThread;
-    pthread_t arduinoThread;
-    if (pthread_create(&simulationThread, NULL, simulationMainLoop, NULL) != 0)
+    pthread_mutex_lock(pSd->arduinoMutex);
+    pthread_mutex_lock(pSd->simulationMutex);
+    pthread_t *simulationThread = new pthread_t;
+    pthread_t *arduinoThread = new pthread_t;
+
+    if (pthread_create(simulationThread, NULL, simulationMainLoop, pSd) != 0)
     {
         cout << "Echec de la création du thread simulation" << endl;
         exit(1);
     }
     cout << "Thread simulation créé" << endl;
-    if (pthread_create(&arduinoThread, NULL, arduinoMain, NULL) != 0)
+    if (pthread_create(arduinoThread, NULL, arduinoMain, pSd) != 0)
     {
         cout << "Echec de la création du thread arduino" << endl;
         exit(1);
     }
     cout << "Thread arduino créé" << endl;
-    if (pthread_join(arduinoThread, NULL) != 0)
+    if (pthread_join(*arduinoThread, NULL) != 0)
     {
         cout << "Echec de la terminaison du thread simulation" << endl;
         exit(1);
     }
     cout << "Thread arduino terminé" << endl;
-    if (pthread_join(simulationThread, NULL) != 0)
+    if (pthread_join(*simulationThread, NULL) != 0)
     {
         cout << "Echec de la terminaison du thread arduino" << endl;
         exit(1);
     }
     cout << "Simulation succesfully terminated" << endl;
+
+    return 0;
+}
+
+int SimulationDataInit(SimulationData *_pSd)
+{
+
+    _pSd->sharedBuffer = new list<string>;
+
+    _pSd->simulationMutex = new pthread_mutex_t;
+    _pSd->arduinoMutex = new pthread_mutex_t;
+
+    pthread_mutexattr_t *pmat = new pthread_mutexattr_t;
+    pthread_mutexattr_init(pmat);
+
+    pthread_mutex_init(_pSd->simulationMutex, pmat);
+    pthread_mutex_init(_pSd->arduinoMutex, pmat);
 
     return 0;
 }

@@ -20,14 +20,19 @@ void SerialObj::begin(int _baud)
 
 void SerialObj::print(string const &s) const
 {
-    sim_untill_ms = int((double)s.size() / 9.6);
-    pthread_mutex_unlock(simulationMutex);
-    pthread_mutex_lock(arduinoMutex);
-    sharedBuffer->push_back(s);
+    pSd->sim_untill_ms = int((double)s.size() / 9.6);
+    pthread_mutex_unlock(pSd->simulationMutex);
+    pthread_mutex_lock(pSd->arduinoMutex);
+    pSd->sharedBuffer->push_back(s);
 }
 
 void SerialObj::print(char const *s) const
 {
     string ss = s;
     print(ss);
+}
+
+void SerialObj::SetSimulationData(SimulationData *_pSd)
+{
+    pSd = _pSd;
 }

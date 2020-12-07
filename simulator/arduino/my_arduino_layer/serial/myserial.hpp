@@ -12,8 +12,10 @@ public:
 
     void print(string const &s) const;
     void print(char const *s) const;
+    void SetSimulationData(SimulationData *_pSd);
 
 private:
     ostream *os;
     int baud;
+    SimulationData *pSd;
 };
