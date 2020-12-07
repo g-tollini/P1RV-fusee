@@ -34,15 +34,18 @@ void KeyboardHandler(unsigned char key, int xpix, int ypix)
         }
         break;
     case 'e':
-        if (int e = sem_wait(semInterface) != 0)
+        if (!shm->simulationTerminated)
         {
-            cout << " semInterface P error code : " << e << endl;
-        }
-        // Manipulate the shared memory (only) here. Be careful about thread calls
+            if (int e = sem_wait(semInterface) != 0)
+            {
+                cout << " semInterface P error code : " << e << endl;
+            }
+            // Manipulate the shared memory (only) here. Be careful about thread calls
 
-        if (int e = sem_post(semSimulator) != 0)
-        {
-            cout << " semSimulator V error code : " << e << endl;
+            if (int e = sem_post(semSimulator) != 0)
+            {
+                cout << " semSimulator V error code : " << e << endl;
+            }
         }
         break;
     default:
@@ -63,6 +66,12 @@ void HandleDisplay()
     {
         cout << " semSimulator V error code : " << e << endl;
     }
+}
+
+void TimerHandler(int value)
+{
+    glutPostRedisplay();
+    return;
 }
 
 int main(int argc, char **argv)
