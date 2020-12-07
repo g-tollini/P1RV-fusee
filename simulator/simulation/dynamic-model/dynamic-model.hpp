@@ -14,7 +14,7 @@ public:
     virtual void LoadModelParameters(void) = 0;
     virtual Vec3d getPosition(void) = 0;
     virtual Vec3d getAttitude(void) = 0;
-    void setStepms(int _step_ms);
+    void setStepms(int _step_ms) { step_ms = _step_ms; };
 
 protected:
     int step_ms;
