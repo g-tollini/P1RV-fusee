@@ -46,7 +46,6 @@ endif(CCACHE_FOUND)
 #set(LIB_SEABER_INCLUDE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/lib/")
 add_subdirectory(interface)
 add_subdirectory(simulator)
-
 # What to build
 add_library(P1RV-fusee-threading
     threading.cpp)

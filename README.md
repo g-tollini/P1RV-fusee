@@ -17,3 +17,5 @@ Fichiers à modifier :
 
 - interface.cpp
 	* Le chemin vers e.sh codé en dur ligne 19
+
+To make this project work I added to my PATH variable the absolute path to my osg static library binary files (for me it is ~/developpement/OpenSceneGraph/build/lib)
