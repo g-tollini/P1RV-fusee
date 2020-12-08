@@ -15,10 +15,18 @@ add_executable(
   interface.cpp
 )
 
+link_directories("~/developpement/OpenSceneGraph/build/lib/osgPlugins-3.7.0")
+
+add_library(testlib SHARED IMPORTED)
+ set_property(TARGET testlib PROPERTY IMPORTED_LOCATION "~/developpement/OpenSceneGraph/build/lib/osgPlugins-3.7.0/osgdb_stld.so")
+
+
 target_link_libraries(${EXEC_NAME} 
   P1RV-fusee-threading
   pthread
   rt
   GL
   glut
-  ${OPENSCENEGRAPH_LIBRARIES})
+  ${OPENSCENEGRAPH_LIBRARIES}
+  osgdb_stld
+  osgText)

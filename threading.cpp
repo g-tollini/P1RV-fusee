@@ -28,4 +28,6 @@ void SharedMemoryInit(SharedMemory *shm)
 {
     shm->simulationTerminated = false;
     shm->t_ms = 0;
+    shm->method = Method::methodEuler;
+    shm->model = Model::Simple;
 }

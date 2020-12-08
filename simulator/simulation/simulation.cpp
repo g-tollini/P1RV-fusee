@@ -66,13 +66,13 @@ void *simulationMainLoop(void *pData)
     switch (pSd->pShm->method)
     {
     case methodEuler:
-        pSolver = new Euler(pSd->pShm);
+        pSolver = new Euler(pSd->pShm, pDynMod);
         break;
     case methodRK4:
-        pSolver = new RungeKutta4(pSd->pShm);
+        pSolver = new RungeKutta4(pSd->pShm, pDynMod);
         break;
     default:
-        pSolver = new Euler(pSd->pShm);
+        pSolver = new Euler(pSd->pShm, pDynMod);
         break;
     }
 
@@ -109,7 +109,7 @@ void *simulationMainLoop(void *pData)
                 // string s = "computed a step of " + to_string(pSd->pShm->step_ms) + " ms";
                 // pSd->sharedBuffer->push_back(s);
 
-                // pSolver->ComputeNextStep(step_ms);
+                pSolver->ComputeNextStep(step_ms);
 
                 pSd->pShm->t_ms += step_ms;
             }

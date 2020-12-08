@@ -20,8 +20,8 @@ public:
     void ComputeNextStep(int step_ms);
     void LoadModelParameters(void);
 
-    Vec3d getPosition(void);
-    Vec3d getAttitude(void);
+    Vector3d getPosition(void);
+    Vector3d getAttitude(void);
 
 private:
     Eigen::Matrix<double, 12, 1> state;

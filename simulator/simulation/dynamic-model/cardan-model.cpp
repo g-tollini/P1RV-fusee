@@ -128,13 +128,13 @@ cardan_state_t ComputeStateDerivative(cardan_state_t const &state, cardan_comman
 void CardanModel::ComputeNextStep(int step_ms) {}
 void CardanModel::LoadModelParameters(void) {}
 
-Vec3d CardanModel::getPosition(void)
+Vector3d CardanModel::getPosition(void)
 {
-    Vec3d v;
+    Vector3d v;
     return v;
 }
-Vec3d CardanModel::getAttitude(void)
+Vector3d CardanModel::getAttitude(void)
 {
-    Vec3d v;
+    Vector3d v;
     return v;
 }

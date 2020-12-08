@@ -20,16 +20,16 @@ void SimpleModel::ComputeNextStep(int step_ms)
 
 void SimpleModel::LoadModelParameters(void) {}
 
-Vec3d SimpleModel::getPosition(void)
+Vector3d SimpleModel::getPosition(void)
 {
-    Vec3d v;
+    Vector3d v;
     v.x = state(0, 0);
     v.y = state(1, 0);
     v.z = state(2, 0);
     return v;
 }
-Vec3d SimpleModel::getAttitude(void)
+Vector3d SimpleModel::getAttitude(void)
 {
-    Vec3d v;
+    Vector3d v;
     return v;
 }

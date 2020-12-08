@@ -11,10 +11,10 @@
 class Solver
 {
 public:
-    Solver(SharedMemory *_pShm);
+    Solver(SharedMemory *_pShm, DynamicModel *_pDynMod);
     int ReadInput(void);
-    void WriteOutput(Vec3d const &position, Vec3d const &attitude);
-    virtual void ComputeNextStep(int step_ms);
+    void WriteOutput(Vector3d const &position, Vector3d const &attitude);
+    virtual void ComputeNextStep(int step_ms) = 0;
     Method method;
 
 protected:
@@ -29,7 +29,7 @@ protected:
 class Euler : public Solver
 {
 public:
-    Euler(SharedMemory *_pShm);
+    Euler(SharedMemory *_pShm, DynamicModel *_pDynMod);
     void ComputeNextStep(int step_ms);
     ~Euler();
 };
@@ -41,6 +41,6 @@ public:
 class RungeKutta4 : public Solver
 {
 public:
-    RungeKutta4(SharedMemory *_pShm);
+    RungeKutta4(SharedMemory *_pShm, DynamicModel *_pDynMod);
     void ComputeNextStep(int step_ms);
 };

@@ -15,12 +15,11 @@ public:
     void ComputeNextStep(int step_ms);
     void LoadModelParameters(void);
 
-    Vec3d getPosition(void);
-    Vec3d getAttitude(void);
+    Vector3d getPosition(void);
+    Vector3d getAttitude(void);
 
 private:
     simple_state_t state;
     simple_state_t dStatedt;
-    simple_command_t command;
-    int step_ms;
+    simple_command_t command = 1.0;
 };
