@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "GL/freeglut.h"
 #include "GL/glut.h"
@@ -19,6 +20,7 @@ int nb_echanges;
 bool simulationInProcess = false;
 
 void *printSimulationData(void *pData);
+void SimulationHandler(int value);
 
 void KeyboardHandler(unsigned char key, int xpix, int ypix)
 {
@@ -30,6 +32,7 @@ void KeyboardHandler(unsigned char key, int xpix, int ypix)
         system("cd ../../simulator && cmake . && ./../build/simulator/P1RV-fusee-simulator -gui &");
         cout << "Simulation lancée" << endl;
         sleep(1);
+        glutTimerFunc(0, SimulationHandler, 0);
         if (sem_post(semSimulator) != 0)
         {
             cout << "semSimulator V error" << endl;
@@ -61,30 +64,47 @@ void HandleDisplay()
 {
 }
 
-void TimerHandler(int value)
+void SimulationHandler(int value)
 {
+    static auto start = std::chrono::steady_clock::now();
+    static auto stop = std::chrono::steady_clock::now();
+    static int previous_step_ms = shm->step_ms;
+    static int time_to_wait = 0;
+    std::chrono::duration<double> elapsed_seconds;
     if (simulationInProcess)
     {
         if (int e = sem_wait(semInterface) != 0)
         {
             cout << " semInterface P error code : " << e << endl;
         }
+        stop = std::chrono::steady_clock::now();
         // Manipulate the shared memory (only) here. Be careful about thread calls
 
         cout << "t_ms = " << shm->t_ms << " ms" << endl;
 
-        if (int e = sem_post(semSimulator) != 0)
-        {
-            cout << " semSimulator V error code : " << e << endl;
-        }
+        elapsed_seconds = stop - start;
+        previous_step_ms = shm->step_ms;
+        shm->step_ms = max(6, (int)(1000 * elapsed_seconds.count()) - 1);
 
         if (shm->simulationTerminated)
         {
             simulationInProcess = false;
         }
+
+        start = std::chrono::steady_clock::now();
+        if (int e = sem_post(semSimulator) != 0)
+        {
+            cout << " semSimulator V error code : " << e << endl;
+        }
+    }
+    else
+    {
+        shm->step_ms = 500;
     }
     glutPostRedisplay();
-    glutTimerFunc(100, TimerHandler, 0);
+    cout << "step : " << 1000 * elapsed_seconds.count() << " ms" << endl;
+    time_to_wait = max(0, previous_step_ms - (int)(1000 * elapsed_seconds.count()));
+    glutTimerFunc(shm->step_ms, SimulationHandler, 0);
     return;
 }
 
@@ -97,7 +117,6 @@ int main(int argc, char **argv)
     glutCreateWindow("P1RV - Fusee");
     glutDisplayFunc(HandleDisplay);
     glutKeyboardFunc(KeyboardHandler);
-    glutTimerFunc(100, TimerHandler, 0);
 
     // Creates a file descriptor
     shm_unlink(SHM_FILE_NAME);

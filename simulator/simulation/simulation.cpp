@@ -78,7 +78,7 @@ void *simulationMainLoop(void *pData)
 
     while (true)
     {
-        pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 500;
+        pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 50000;
         if (pSd->pShm->simulationTerminated)
         {
             if (pSd->pShm->interfaceOn)
@@ -106,6 +106,8 @@ void *simulationMainLoop(void *pData)
 
                 int step_ms = pSd->pShm->step_ms < pSd->sim_untill_ms ? pSd->pShm->step_ms : pSd->sim_untill_ms;
                 pSd->sim_untill_ms -= step_ms;
+                // string s = "computed a step of " + to_string(pSd->pShm->step_ms) + " ms";
+                // pSd->sharedBuffer->push_back(s);
 
                 // pSolver->ComputeNextStep(step_ms);
 
