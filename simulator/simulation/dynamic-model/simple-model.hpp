@@ -2,8 +2,8 @@
 
 #include "dynamic-model.hpp"
 
-typedef Eigen::Vector3d simple_state_t;
-typedef double simple_command_t;
+typedef Eigen::Vector3d simple_state_t; // (z, z')
+typedef double simple_command_t;        // booster_thrust
 
 /**
  * @brief Implements the matrix equation
@@ -12,6 +12,7 @@ typedef double simple_command_t;
 class SimpleModel : public DynamicModel
 {
 public:
+    SimpleModel(SimulationData *_pSd) : DynamicModel(_pSd){};
     void ComputeNextStep(int step_ms);
     void LoadModelParameters(void);
 
@@ -21,5 +22,5 @@ public:
 private:
     simple_state_t state;
     simple_state_t dStatedt;
-    simple_command_t command = 1.0;
+    simple_command_t command;
 };

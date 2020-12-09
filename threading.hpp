@@ -49,6 +49,7 @@ struct SharedMemory
     int t_ms;
     Vector3d position;
     Vector3d attitude;
+    double booster_thrust;
 };
 
 /**

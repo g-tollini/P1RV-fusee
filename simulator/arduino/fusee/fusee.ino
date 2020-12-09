@@ -13,7 +13,16 @@ void setup()
 
 void loop()
 {
-  delay(111); // arbitrary delay
+  double h = heightSensor.MeasureHeight();
+  Serial.print("Height : ");
+  Serial.print(h);
   // put your main code here, to run repeatedly:
+  if (h < 10.0)
+  {
+    idealBooster.SetThrust(11.0);
+  }
+  else
+  {
+    idealBooster.SetThrust(0.0);
+  }
 }
-

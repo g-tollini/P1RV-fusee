@@ -8,6 +8,7 @@ typedef int quaternions_command_t;
 class QuaternionsModel : public DynamicModel
 {
 public:
+    QuaternionsModel(SimulationData *_pSd) : DynamicModel(_pSd){};
     void ComputeNextStep(int step_ms);
     void LoadModelParameters(void);
 

@@ -131,23 +131,13 @@ void SimulationHandler(int value)
     {
         shm->step_ms = 500;
     }
-    glutPostRedisplay();
-    cout << "step : " << 1000 * elapsed_seconds.count() << " ms" << endl;
+    // cout << "step : " << 1000 * elapsed_seconds.count() << " ms" << endl;
     time_to_wait = max(0, previous_step_ms - (int)(1000 * elapsed_seconds.count()));
-    glutTimerFunc(shm->step_ms, SimulationHandler, 0);
     return;
 }
 
 int main(int argc, char **argv)
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE);
-    glutInitWindowSize(500, 500);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow("P1RV - Fusee");
-    glutDisplayFunc(HandleDisplay);
-    glutKeyboardFunc(KeyboardHandler);
-
     // Creates a file descriptor
     shm_unlink(SHM_FILE_NAME);
     int segmentFileDescriptor = shm_open(SHM_FILE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
@@ -164,12 +154,6 @@ int main(int argc, char **argv)
     off_t memOffset = 0;
     void *shmPtr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, segmentFileDescriptor, memOffset);
     shm = (SharedMemory *)shmPtr;
-
-    shm->interfaceOn = true;
-    shm->step_ms = 15;
-
-    shm->model = Model::Simple;
-    shm->method = Method::methodEuler;
 
     // Creates posix semaphores
     sem_unlink(SEM_INTERFACE_FILE_NAME);
@@ -315,10 +299,8 @@ void StartSimulation(void)
 {
     nb_echanges = 0;
     SharedMemoryInit(shm);
-    system("cd ../../simulator && cmake . && ./../build/simulator/P1RV-fusee-simulator -gui &");
+    system("./../../e.sh");
     cout << "Simulation lancée" << endl;
-    sleep(1);
-    glutTimerFunc(0, SimulationHandler, 0);
     if (sem_post(semSimulator) != 0)
     {
         cout << "semSimulator V error" << endl;

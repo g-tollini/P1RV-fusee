@@ -3,6 +3,17 @@
 
 SerialObj Serial(cout);
 SimulationData *pSd;
+IdealBooster idealBooster;
+HeightSensor heightSensor;
+
+void silent_delay(int delay_ms)
+{
+    pSd->sim_untill_ms = delay_ms;
+    pthread_mutex_unlock(pSd->simulationMutex);
+    pthread_mutex_lock(pSd->arduinoMutex);
+
+    return;
+}
 
 void delay(int delay_ms)
 {

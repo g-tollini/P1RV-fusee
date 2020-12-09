@@ -52,13 +52,13 @@ void *simulationMainLoop(void *pData)
     switch (pSd->pShm->model)
     {
     case Cardan:
-        pDynMod = new CardanModel();
+        pDynMod = new CardanModel(pSd);
         break;
     case Quaternions:
-        pDynMod = new QuaternionsModel();
+        pDynMod = new QuaternionsModel(pSd);
         break;
     default:
-        pDynMod = new SimpleModel();
+        pDynMod = new SimpleModel(pSd);
         break;
     }
 
@@ -78,7 +78,7 @@ void *simulationMainLoop(void *pData)
 
     while (true)
     {
-        pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 6000;
+        pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 60000;
         if (pSd->pShm->simulationTerminated)
         {
             if (pSd->pShm->interfaceOn)
@@ -106,8 +106,6 @@ void *simulationMainLoop(void *pData)
 
                 int step_ms = pSd->pShm->step_ms < pSd->sim_untill_ms ? pSd->pShm->step_ms : pSd->sim_untill_ms;
                 pSd->sim_untill_ms -= step_ms;
-                // string s = "computed a step of " + to_string(pSd->pShm->step_ms) + " ms";
-                // pSd->sharedBuffer->push_back(s);
 
                 pSolver->ComputeNextStep(step_ms);
 

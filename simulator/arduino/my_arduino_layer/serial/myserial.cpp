@@ -32,6 +32,11 @@ void SerialObj::print(char const *s) const
     print(ss);
 }
 
+void SerialObj::print(double d) const
+{
+    print(to_string(d));
+}
+
 void SerialObj::SetSimulationData(SimulationData *_pSd)
 {
     pSd = _pSd;
