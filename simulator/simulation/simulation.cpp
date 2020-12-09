@@ -78,7 +78,7 @@ void *simulationMainLoop(void *pData)
 
     while (true)
     {
-        pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 50000;
+        pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 6000;
         if (pSd->pShm->simulationTerminated)
         {
             if (pSd->pShm->interfaceOn)
