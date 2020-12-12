@@ -26,7 +26,7 @@ endif(CCACHE_FOUND)
 # Enable tests in project
 find_package(GTest REQUIRED)
 enable_testing()
-add_test(UnitTests test/unit_tests)
+add_test(UnitTests tests/unit_tests)
 
 # Python venv related
 #set(Python3_VENV_DIR "${PROJECT_SOURCE_DIR}/.venv")
