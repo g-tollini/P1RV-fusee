@@ -12,8 +12,10 @@ find_package(OpenSceneGraph REQUIRED OpenThreads osg osgGA osgDB osgText osgView
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 set(BKG_LOC "\"${PROJECT_SOURCE_DIR}/ressources/background.stl\"")
+set(E_SH_LOC "\"${PROJECT_SOURCE_DIR}/e.sh\"")
 message("Background file located here : " ${BKG_LOC})
-add_definitions(-DBACKGROUND_LOC=${BKG_LOC})
+message("e.sh located here : " ${E_SH_LOC})
+add_definitions(-DBACKGROUND_LOC=${BKG_LOC} -DE_SH=${E_SH_LOC})
 
 add_executable(
   ${EXEC_NAME}

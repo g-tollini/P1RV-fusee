@@ -306,7 +306,11 @@ void StartSimulation(void)
 {
     nb_echanges = 0;
     SharedMemoryInit(shm);
-    system("./../../e.sh");
+#ifdef E_SH
+    system(E_SH);
+#else
+    system("./e.sh");
+#endif
     cout << "Simulation lancée" << endl;
     if (sem_post(semSimulator) != 0)
     {
