@@ -2,9 +2,6 @@
 
 #include "dynamic-model.hpp"
 
-#include </usr/share/eigen-3.3.8/Eigen/Core>
-#include </usr/share/eigen-3.3.8/Eigen/Dense>
-
 /**
  * @brief Type of the state. May vary so define it here then only use state_t
  * 

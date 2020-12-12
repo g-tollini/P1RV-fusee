@@ -11,7 +11,6 @@ add_subdirectory(simulation)
 target_link_libraries(${EXEC_NAME} 
   P1RV-fusee-simulation
   P1RV-fusee-arduino-main
-  P1RV-fusee-arduino-code
   P1RV-fusee-arduino-layer
   rt
   pthread)

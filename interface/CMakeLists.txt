@@ -4,14 +4,16 @@ cmake_minimum_required (VERSION 3.8)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_MODULE_PATH /usr/share/cmake-3.13/Modules ~/developpement/OpenSceneGraph/CMakeModules)
-
 find_package(OpenThreads)
 find_package(osg)
 
 find_package(OpenSceneGraph REQUIRED OpenThreads osg osgGA osgDB osgText osgViewer)
 
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
+
+set(BKG_LOC "\"${PROJECT_SOURCE_DIR}/ressources/background.stl\"")
+message("Background file located here : " ${BKG_LOC})
+add_definitions(-DBACKGROUND_LOC=${BKG_LOC})
 
 add_executable(
   ${EXEC_NAME}

@@ -279,8 +279,15 @@ bool StartDisplay(void)
     Matrix terrainScaleMatrix;
     terrainScaleMatrix.makeScale(osg::Vec3d(1, 1, 1));
 
-    //Loading the terrain node
-    ref_ptr<Node> terrainnode(osgDB::readNodeFile("/home/guillaume/centrale/P1RV-fusee/ressources/background.stl"));
+//Loading the terrain node
+#ifdef BACKGROUND_LOC
+    cout << "backgrould.stl location : " << BACKGROUND_LOC << endl;
+    ref_ptr<Node> terrainnode(osgDB::readNodeFile(BACKGROUND_LOC));
+#else
+    ref_ptr<Node> terrainnode(osgDB::readNodeFile("ressources/background.stl"));
+    cout << "background.stl location not defined" << endl;
+    exit(0);
+#endif
 
     //Set transformation node parameters
     terrainScaleMAT->addChild(terrainnode.get());

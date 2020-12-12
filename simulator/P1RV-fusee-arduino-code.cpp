@@ -1,6 +1,6 @@
 
 #ifdef SIM
-#include "myarduino.hpp"
+#include "../myarduino.hpp"
 #endif
 
 void setup()

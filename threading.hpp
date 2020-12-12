@@ -11,7 +11,7 @@
 #include <list>
 #include <cstring>
 
-#include </usr/share/eigen-3.3.8/Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 
 #include "simulator/simulation/dynamic-model/parameters.hpp"
 
