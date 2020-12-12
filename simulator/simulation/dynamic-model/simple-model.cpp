@@ -1,14 +1,23 @@
 #include "simple-model.hpp"
 
+SimpleModel::SimpleModel(SimulationData *_pSd) : DynamicModel(_pSd)
+{
+    state << 0.0, 0.0;
+    dStatedt << 0.0, 0.0;
+    command = 0.0;
+};
+
 void SimpleModel::ComputeStateDerivative()
 {
-    dStatedt(0, 0) += state(1, 0);
+    dStatedt(0, 0) = state(1, 0);
     dStatedt(1, 0) = command - 9.8;
 }
 
 void SimpleModel::ComputeNextState()
 {
-    state += step_ms * dStatedt;
+    state += step_ms / 1000.0 * dStatedt;
+    string s = "state : " + to_string(state(0, 0)) + ", " + to_string(state(1, 0)) + "\0";
+    pSd->sharedBuffer->push_back(s);
 }
 
 void SimpleModel::LoadModelParameters(void) {}

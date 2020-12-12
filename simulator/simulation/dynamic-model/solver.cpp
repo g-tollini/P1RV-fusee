@@ -7,24 +7,17 @@ Solver::Solver(SharedMemory *_pShm, DynamicModel *_pDynMod)
     pDynMod = _pDynMod;
 }
 
-int Solver::ReadInput(void)
-{
-    return pShm->step_ms;
-}
-
-void Solver::WriteOutput(Vector3d const &position, Vector3d const &attitude)
-{
-    memcpy(&pShm->position, &position, sizeof(Vector3d));
-    memcpy(&pShm->attitude, &attitude, sizeof(Vector3d));
-}
-
 Euler::Euler(SharedMemory *_pShm, DynamicModel *_pDynMod) : Solver(_pShm, _pDynMod) {}
 
 void Euler::ComputeNextStep(int step_ms)
 {
+    pDynMod->setStepms(step_ms);
+    pDynMod->UpdateCommand();
     pDynMod->ComputeStateDerivative();
     pDynMod->ComputeNextState();
-    WriteOutput(pDynMod->getPosition(), pDynMod->getPosition());
+
+    pShm->position = pDynMod->getPosition();
+    pShm->attitude = pDynMod->getPosition();
 }
 
 RungeKutta4::RungeKutta4(SharedMemory *_pShm, DynamicModel *_pDynMod) : Solver(_pShm, _pDynMod) {}

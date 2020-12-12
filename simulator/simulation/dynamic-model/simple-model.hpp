@@ -2,7 +2,7 @@
 
 #include "dynamic-model.hpp"
 
-typedef Eigen::Vector3d simple_state_t; // (z, z')
+typedef Eigen::Vector2d simple_state_t; // (z, z')
 typedef double simple_command_t;        // booster_thrust
 
 /**
@@ -12,7 +12,7 @@ typedef double simple_command_t;        // booster_thrust
 class SimpleModel : public DynamicModel
 {
 public:
-    SimpleModel(SimulationData *_pSd) : DynamicModel(_pSd){};
+    SimpleModel(SimulationData *_pSd);
     void ComputeStateDerivative(void);
     void ComputeNextState(void);
     void LoadModelParameters(void);

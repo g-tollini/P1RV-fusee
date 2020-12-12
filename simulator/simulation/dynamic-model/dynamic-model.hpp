@@ -18,7 +18,7 @@ public:
     virtual Vector3d getAttitude(void) = 0;
     void setStepms(int _step_ms)
     {
-        step_ms = _step_ms;
+        step_ms = (double)_step_ms;
         ClearBuffer();
     };
     virtual void UpdateCommand(void) = 0;
@@ -30,5 +30,5 @@ public:
 protected:
     virtual void ClearBuffer(void) = 0;
     SimulationData *pSd;
-    int step_ms;
+    double step_ms;
 };

@@ -12,8 +12,6 @@ class Solver
 {
 public:
     Solver(SharedMemory *_pShm, DynamicModel *_pDynMod);
-    int ReadInput(void);
-    void WriteOutput(Vector3d const &position, Vector3d const &attitude);
     virtual void ComputeNextStep(int step_ms) = 0;
     Method method;
 
