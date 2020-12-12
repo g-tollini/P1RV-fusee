@@ -1,19 +1,14 @@
 #include "simple-model.hpp"
 
-simple_state_t ComputeStateDerivative(simple_command_t booster_thrust)
+void SimpleModel::ComputeStateDerivative()
 {
-    static simple_state_t out = simple_state_t::Zero();
-    out(0, 0) += out(1, 0);
-    out(1, 0) = booster_thrust - 9.8;
-    return out;
+    dStatedt(0, 0) += state(1, 0);
+    dStatedt(1, 0) = command - 9.8;
 }
 
-void SimpleModel::ComputeNextStep(int step_ms)
+void SimpleModel::ComputeNextState()
 {
-    simple_state_t dStatedt = ComputeStateDerivative(pSd->pShm->booster_thrust);
-
-    state(0, 0) += (step_ms / 1000.0) * state(1, 0);
-    state(1, 0) += (step_ms / 1000.0) * dStatedt(1, 0);
+    state += step_ms * dStatedt;
 }
 
 void SimpleModel::LoadModelParameters(void) {}
@@ -30,4 +25,34 @@ Vector3d SimpleModel::getAttitude(void)
 {
     Vector3d v;
     return v;
+}
+
+void SimpleModel::UpdateCommand(void)
+{
+    command = pSd->pShm->booster_thrust;
+}
+
+void SimpleModel::BufferizeState(int bufferIndex)
+{
+    buffer[bufferIndex] = state;
+}
+
+void SimpleModel::LoadState(int bufferIndex)
+{
+    state = buffer[bufferIndex];
+}
+
+void SimpleModel::BufferizeStateDerivative(int bufferIndex)
+{
+    buffer[bufferIndex] = dStatedt;
+}
+
+void SimpleModel::LoadStateDerivative(int bufferIndex)
+{
+    dStatedt = buffer[bufferIndex];
+}
+
+void SimpleModel::ClearBuffer(void)
+{
+    buffer.clear();
 }

@@ -18,14 +18,22 @@ class CardanModel : public DynamicModel
 {
 public:
     CardanModel(SimulationData *_pSd) : DynamicModel(_pSd){};
-    void ComputeNextStep(int step_ms);
+    void ComputeStateDerivative(void);
+    void ComputeNextState(void);
     void LoadModelParameters(void);
 
     Vector3d getPosition(void);
     Vector3d getAttitude(void);
+    void UpdateCommand(void);
+    void BufferizeState(int bufferIndex);
+    void LoadState(int bufferIndex);
+    void BufferizeStateDerivative(int bufferIndex);
+    void LoadStateDerivative(int bufferIndex);
 
 private:
-    Eigen::Matrix<double, 12, 1> state;
-    Eigen::Matrix<double, 12, 1> dStatedt;
+    void ClearBuffer(void);
+    cardan_state_t state;
+    cardan_state_t dStatedt;
     cardan_command_t command;
+    vector<cardan_state_t> buffer;
 };

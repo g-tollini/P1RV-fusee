@@ -4,33 +4,33 @@
 
 inline cardan_rotation_t Rx(double angle)
 {
-    cardan_rotation_t out;
-    out << 1.0, 0.0, 0.0, 0.0, cos(angle), -sin(angle), 0.0, sin(angle),
+    cardan_rotation_t dStatedt;
+    dStatedt << 1.0, 0.0, 0.0, 0.0, cos(angle), -sin(angle), 0.0, sin(angle),
         cos(angle);
-    return out;
+    return dStatedt;
 }
 
 inline cardan_rotation_t Ry(double angle)
 {
-    cardan_rotation_t out;
-    out << cos(angle), 0.0, sin(angle), 0.0, 1.0, 0.0, -sin(angle), 0.0,
+    cardan_rotation_t dStatedt;
+    dStatedt << cos(angle), 0.0, sin(angle), 0.0, 1.0, 0.0, -sin(angle), 0.0,
         cos(angle);
-    return out;
+    return dStatedt;
 }
 
 inline cardan_rotation_t Rz(double angle)
 {
-    cardan_rotation_t out;
-    out << cos(angle), -sin(angle), 0.0, sin(angle), cos(angle), 0.0, 0.0, 0.0,
+    cardan_rotation_t dStatedt;
+    dStatedt << cos(angle), -sin(angle), 0.0, sin(angle), cos(angle), 0.0, 0.0, 0.0,
         1.0;
-    return out;
+    return dStatedt;
 }
 
 inline cardan_rotation_t S(Eigen::Vector3d const &v)
 {
-    cardan_rotation_t out;
-    out << 0.0, -v(2, 0), v(1, 0), v(2, 0), 0.0, -v(0, 0), -v(1, 0), v(0, 0), 0.0;
-    return out;
+    cardan_rotation_t dStatedt;
+    dStatedt << 0.0, -v(2, 0), v(1, 0), v(2, 0), 0.0, -v(0, 0), -v(1, 0), v(0, 0), 0.0;
+    return dStatedt;
 }
 
 inline cardan_action_t TauG(cardan_rotation_t const &j1, cardan_state_t const &state)
@@ -42,51 +42,51 @@ inline cardan_action_t TauG(cardan_rotation_t const &j1, cardan_state_t const &s
     double altitude = state(8, 0);
     Eigen::Vector3d centerOfMass;
     double mass = 0;
-    cardan_action_t out;
+    cardan_action_t dStatedt;
     if (altitude < 0)
     {
     }
     else
     {
-        out.block<3, 1>(0, 0) = j1.transpose() * m_weight;
-        out.block<3, 1>(3, 0) = S(centerOfMass) * j1.transpose() * m_weight;
+        dStatedt.block<3, 1>(0, 0) = j1.transpose() * m_weight;
+        dStatedt.block<3, 1>(3, 0) = S(centerOfMass) * j1.transpose() * m_weight;
     }
-    return out;
+    return dStatedt;
 }
 
 inline cardan_action_t TauATilde(cardan_state_t const &state)
 {
-    cardan_action_t out;
+    cardan_action_t dStatedt;
 
-    return out;
+    return dStatedt;
 }
 
 inline cardan_action_t TauD(cardan_state_t const &state)
 {
-    cardan_action_t out;
+    cardan_action_t dStatedt;
 
-    return out;
+    return dStatedt;
 }
 
 inline cardan_action_t TauC(cardan_state_t const &state, cardan_command_t const &command)
 {
-    cardan_action_t out;
+    cardan_action_t dStatedt;
 
-    return out;
+    return dStatedt;
 }
 
 Eigen::Matrix<double, 6, 6> RBCoriolisMatrix(cardan_state_t const &state)
 {
-    Eigen::Matrix<double, 6, 6> out;
+    Eigen::Matrix<double, 6, 6> dStatedt;
 
-    return out;
+    return dStatedt;
 }
 
 Eigen::Matrix<double, 6, 6> AddedMassMatrix(const double &depth)
 {
-    Eigen::Matrix<double, 6, 6> out;
+    Eigen::Matrix<double, 6, 6> dStatedt;
 
-    return out;
+    return dStatedt;
 }
 
 Eigen::Matrix<double, 6, 6> M(double altitude)
@@ -95,7 +95,7 @@ Eigen::Matrix<double, 6, 6> M(double altitude)
     return m_m_rb + AddedMassMatrix(altitude);
 }
 
-cardan_state_t ComputeStateDerivative(cardan_state_t const &state, cardan_command_t const &command)
+void CardanModel::ComputeStateDerivative(void)
 {
 
     cardan_rotation_t j_1 =
@@ -117,15 +117,13 @@ cardan_state_t ComputeStateDerivative(cardan_state_t const &state, cardan_comman
     cardan_action_t tau_tilde =
         tau_g + tau_d + tau_a_tilde + tau_c;
 
-    cardan_state_t out;
-    out.block<6, 1>(0, 0) =
+    dStatedt.block<6, 1>(0, 0) =
         M(state(8, 0)).inverse() * (tau_tilde - RBCoriolisMatrix(state) * nu);
-    out.block<3, 1>(6, 0) = j_1 * nu.block<3, 1>(0, 0);
-    out.block<3, 1>(9, 0) = j_2 * nu.block<3, 1>(3, 0);
-
-    return out;
+    dStatedt.block<3, 1>(6, 0) = j_1 * nu.block<3, 1>(0, 0);
+    dStatedt.block<3, 1>(9, 0) = j_2 * nu.block<3, 1>(3, 0);
 }
-void CardanModel::ComputeNextStep(int step_ms) {}
+void CardanModel::ComputeNextState(void) {}
+
 void CardanModel::LoadModelParameters(void) {}
 
 Vector3d CardanModel::getPosition(void)
@@ -137,4 +135,33 @@ Vector3d CardanModel::getAttitude(void)
 {
     Vector3d v;
     return v;
+}
+
+void CardanModel::UpdateCommand(void)
+{
+}
+
+void CardanModel::BufferizeState(int bufferIndex)
+{
+    buffer[bufferIndex] = state;
+}
+
+void CardanModel::LoadState(int bufferIndex)
+{
+    state = buffer[bufferIndex];
+}
+
+void CardanModel::BufferizeStateDerivative(int bufferIndex)
+{
+    buffer[bufferIndex] = dStatedt;
+}
+
+void CardanModel::LoadStateDerivative(int bufferIndex)
+{
+    dStatedt = buffer[bufferIndex];
+}
+
+void CardanModel::ClearBuffer(void)
+{
+    buffer.clear();
 }

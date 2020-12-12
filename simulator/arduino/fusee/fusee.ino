@@ -19,7 +19,7 @@ void loop()
   // put your main code here, to run repeatedly:
   if (h < 10.0)
   {
-    idealBooster.SetThrust(11.0);
+    idealBooster.SetThrust(100.0);
   }
   else
   {

@@ -22,7 +22,8 @@ Euler::Euler(SharedMemory *_pShm, DynamicModel *_pDynMod) : Solver(_pShm, _pDynM
 
 void Euler::ComputeNextStep(int step_ms)
 {
-    pDynMod->ComputeNextStep(step_ms);
+    pDynMod->ComputeStateDerivative();
+    pDynMod->ComputeNextState();
     WriteOutput(pDynMod->getPosition(), pDynMod->getPosition());
 }
 

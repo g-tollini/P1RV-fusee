@@ -24,8 +24,9 @@ endif(CCACHE_FOUND)
 #if ("${ENABLE_CLANG_TIDY}")...
 
 # Enable tests in project
-#enable_testing()
-#add_test(UnitTests test/unit_tests)
+find_package(GTest REQUIRED)
+enable_testing()
+add_test(UnitTests test/unit_tests)
 
 # Python venv related
 #set(Python3_VENV_DIR "${PROJECT_SOURCE_DIR}/.venv")
@@ -42,10 +43,12 @@ endif(CCACHE_FOUND)
 #get_filename_component(Python3_STDLIB_NAME "${Python3_STDLIB}" NAME)
 #set(PYTHON_EXECUTABLE "${Python3_EXECUTABLE}")
 
+
 # Include all needed stuff
 #set(LIB_SEABER_INCLUDE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/lib/")
 add_subdirectory(interface)
 add_subdirectory(simulator)
+add_subdirectory(tests)
 # What to build
 add_library(P1RV-fusee-threading
     threading.cpp)
