@@ -196,6 +196,8 @@ void StartSimulation(void)
     return;
 }
 
+osg::Camera *createHUD();
+
 bool StartDisplay(void)
 {
     /* OBJECTS CREATION */
@@ -283,7 +285,126 @@ bool StartDisplay(void)
 
     root->setUpdateCallback(new MyUpdateCallback());
 
+    // osg::Camera *hudCamera = createHUD();
+    // viewer.setUpViewAcrossAllScreens();
+    // osgViewer::Viewer::Windows windows;
+    // viewer.getWindows(windows);
+    // hudCamera->setGraphicsContext(windows[0]);
+    // hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+
+    // viewer.addSlave(hudCamera, false);
+
     /* START VIEWER */
     //The viewer.run() method starts the threads and the traversals.
     return (viewer.run());
+}
+
+osg::Camera *createHUD()
+{
+    // create a camera to set up the projection and model view matrices, and the subgraph to draw in the HUD
+    osg::Camera *camera = new osg::Camera;
+
+    // set the projection matrix
+    camera->setProjectionMatrix(osg::Matrix::ortho2D(0, 1280, 0, 1024));
+
+    // set the view matrix
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setViewMatrix(osg::Matrix::identity());
+
+    // only clear the depth buffer
+    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+
+    // draw subgraph after main camera view.
+    camera->setRenderOrder(osg::Camera::POST_RENDER);
+
+    // we don't want the camera to grab event focus from the viewers main camera(s).
+    camera->setAllowEventFocus(false);
+
+    // add to this camera a subgraph to render
+    {
+
+        osg::Geode *geode = new osg::Geode();
+
+        // std::string timesFont("fonts/arial.ttf");
+
+        // turn lighting off for the text and disable depth test to ensure it's always ontop.
+        osg::StateSet *stateset = geode->getOrCreateStateSet();
+        stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+        osg::Vec3 position(150.0f, 800.0f, 0.0f);
+        osg::Vec3 delta(0.0f, -120.0f, 0.0f);
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("Head Up Displays are simple :-)");
+
+            position += delta;
+        }
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("All you need to do is create your text in a subgraph.");
+
+            position += delta;
+        }
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("Then place an osg::Camera above the subgraph\n"
+                          "to create an orthographic projection.\n");
+
+            position += delta;
+        }
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("Set the Camera's ReferenceFrame to ABSOLUTE_RF to ensure\n"
+                          "it remains independent from any external model view matrices.");
+
+            position += delta;
+        }
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("And set the Camera's clear mask to just clear the depth buffer.");
+
+            position += delta;
+        }
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("And finally set the Camera's RenderOrder to POST_RENDER\n"
+                          "to make sure it's drawn last.");
+
+            position += delta;
+        }
+
+        camera->addChild(geode);
+    }
+
+    return camera;
 }

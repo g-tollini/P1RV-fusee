@@ -1,6 +1,6 @@
 #include "simple-model.hpp"
 
-SimpleModel::SimpleModel(SimulationData *_pSd) : DynamicModel(_pSd)
+SimpleModel::SimpleModel()
 {
     state << 0.0, 0.0;
     dStatedt << 0.0, 0.0;
@@ -13,11 +13,9 @@ void SimpleModel::ComputeStateDerivative()
     dStatedt(1, 0) = command - 9.8;
 }
 
-void SimpleModel::ComputeNextState()
+void SimpleModel::ComputeNextState(double step_fraction)
 {
-    state += step_ms / 1000.0 * dStatedt;
-    string s = "state : " + to_string(state(0, 0)) + ", " + to_string(state(1, 0)) + "\0";
-    pSd->sharedBuffer->push_back(s);
+    state += step_fraction * step_ms / 1000.0 * dStatedt;
 }
 
 void SimpleModel::LoadModelParameters(void) {}
@@ -30,13 +28,23 @@ Vector3d SimpleModel::getPosition(void)
     v.z = state(0, 0);
     return v;
 }
+
+void SimpleModel::SetPosition(Vector3d position)
+{
+    state(0, 0) = position.z;
+}
+
 Vector3d SimpleModel::getAttitude(void)
 {
     Vector3d v;
     return v;
 }
 
-void SimpleModel::UpdateCommand(void)
+void SimpleModel::SetAttitude(Vector3d attitude)
+{
+    //do nothing
+}
+void SimpleModel::UpdateCommand(SimulationData *pSd)
 {
     command = pSd->pShm->booster_thrust;
 }

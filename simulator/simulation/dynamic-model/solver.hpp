@@ -11,8 +11,9 @@
 class Solver
 {
 public:
-    Solver(SharedMemory *_pShm, DynamicModel *_pDynMod);
-    virtual void ComputeNextStep(int step_ms) = 0;
+    Solver(DynamicModel *_pDynMod);
+    void UpdateCommand(SimulationData *pSd);
+    virtual void ComputeNextState(int step_ms) = 0;
     Method method;
 
 protected:
@@ -27,9 +28,20 @@ protected:
 class Euler : public Solver
 {
 public:
-    Euler(SharedMemory *_pShm, DynamicModel *_pDynMod);
-    void ComputeNextStep(int step_ms);
+    Euler(DynamicModel *_pDynMod) : Solver(_pDynMod){};
+    void ComputeNextState(int step_ms);
     ~Euler();
+};
+
+/**
+ * @brief the ComputeNextStep method is to be defined to implement the RK2 method
+ * 
+ */
+class RungeKutta2 : public Solver
+{
+public:
+    RungeKutta2(DynamicModel *_pDynMod) : Solver(_pDynMod){};
+    void ComputeNextState(int step_ms);
 };
 
 /**
@@ -39,6 +51,6 @@ public:
 class RungeKutta4 : public Solver
 {
 public:
-    RungeKutta4(SharedMemory *_pShm, DynamicModel *_pDynMod);
-    void ComputeNextStep(int step_ms);
+    RungeKutta4(DynamicModel *_pDynMod) : Solver(_pDynMod){};
+    void ComputeNextState(int step_ms);
 };

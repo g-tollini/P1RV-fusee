@@ -52,13 +52,13 @@ void *simulationMainLoop(void *pData)
     switch (pSd->pShm->model)
     {
     case Cardan:
-        pDynMod = new CardanModel(pSd);
+        pDynMod = new CardanModel();
         break;
     case Quaternions:
-        pDynMod = new QuaternionsModel(pSd);
+        pDynMod = new QuaternionsModel();
         break;
     default:
-        pDynMod = new SimpleModel(pSd);
+        pDynMod = new SimpleModel();
         break;
     }
 
@@ -66,15 +66,19 @@ void *simulationMainLoop(void *pData)
     switch (pSd->pShm->method)
     {
     case methodEuler:
-        pSolver = new Euler(pSd->pShm, pDynMod);
+        pSolver = new Euler(pDynMod);
         break;
     case methodRK4:
-        pSolver = new RungeKutta4(pSd->pShm, pDynMod);
+        pSolver = new RungeKutta4(pDynMod);
         break;
     default:
-        pSolver = new Euler(pSd->pShm, pDynMod);
+        pSolver = new Euler(pDynMod);
         break;
     }
+
+    // Initialise the state
+    pDynMod->SetPosition(pSd->pShm->position);
+    pDynMod->SetAttitude(pSd->pShm->attitude);
 
     while (true)
     {
@@ -124,7 +128,8 @@ void *simulationMainLoop(void *pData)
                 pSd->sim_untill_ms -= step_ms;
                 pSd->pShm->next_frame_ms -= step_ms;
 
-                pSolver->ComputeNextStep(step_ms);
+                pSolver->UpdateCommand(pSd);
+                pSolver->ComputeNextState(step_ms);
 
                 pSd->pShm->t_ms += step_ms;
             }
