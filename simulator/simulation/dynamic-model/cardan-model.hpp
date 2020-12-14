@@ -14,14 +14,15 @@ typedef Eigen::Matrix3d cardan_rotation_t;
 class CardanModel : public DynamicModel
 {
 public:
-    CardanModel(SimulationData *_pSd) : DynamicModel(_pSd){};
     void ComputeStateDerivative(void);
-    void ComputeNextState(void);
+    void ComputeNextState(double step_fraction);
     void LoadModelParameters(void);
 
     Vector3d getPosition(void);
+    void SetPosition(Vector3d);
     Vector3d getAttitude(void);
-    void UpdateCommand(void);
+    void SetAttitude(Vector3d);
+    void UpdateCommand(SimulationData *pSd);
     void BufferizeState(int bufferIndex);
     void LoadState(int bufferIndex);
     void BufferizeStateDerivative(int bufferIndex);

@@ -1,28 +1,47 @@
 #include "solver.hpp"
 #include "dynamic-model.hpp"
 
-Solver::Solver(SharedMemory *_pShm, DynamicModel *_pDynMod)
+Solver::Solver(DynamicModel *_pDynMod)
 {
-    pShm = _pShm;
     pDynMod = _pDynMod;
 }
 
-Euler::Euler(SharedMemory *_pShm, DynamicModel *_pDynMod) : Solver(_pShm, _pDynMod) {}
-
-void Euler::ComputeNextStep(int step_ms)
+void Solver::UpdateCommand(SimulationData *pSd)
 {
-    pDynMod->setStepms(step_ms);
-    pDynMod->UpdateCommand();
-    pDynMod->ComputeStateDerivative();
-    pDynMod->ComputeNextState();
-
-    pShm->position = pDynMod->getPosition();
-    pShm->attitude = pDynMod->getPosition();
+    pDynMod->UpdateCommand(pSd);
 }
 
-RungeKutta4::RungeKutta4(SharedMemory *_pShm, DynamicModel *_pDynMod) : Solver(_pShm, _pDynMod) {}
+void Euler::ComputeNextState(int step_ms)
+{
+    pDynMod->setStepms(step_ms);
 
-void RungeKutta4::ComputeNextStep(int step_ms)
+    double step_fraction = 1.0;
+
+    // The current state must be stored in pDynMod->state at this point
+    pDynMod->ComputeStateDerivative();
+    // This computes the current state derivative
+    pDynMod->ComputeNextState(step_fraction);
+
+    pShm->position = pDynMod->getPosition();
+    pShm->attitude = pDynMod->getAttitude();
+}
+
+void RungeKutta2::ComputeNextState(int step_ms)
+{
+    pDynMod->setStepms(step_ms);
+
+    double step_fraction = 0.5;
+
+    // The current state must be stored in pDynMod->state at this point
+    pDynMod->ComputeStateDerivative();
+    // This computes the current state derivative
+    pDynMod->ComputeNextState(step_fraction);
+
+    pShm->position = pDynMod->getPosition();
+    pShm->attitude = pDynMod->getAttitude();
+}
+
+void RungeKutta4::ComputeNextState(int step_ms)
 {
     //RK4 method...
 }

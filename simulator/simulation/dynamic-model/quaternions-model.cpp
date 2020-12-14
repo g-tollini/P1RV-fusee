@@ -2,7 +2,7 @@
 
 void QuaternionsModel::ComputeStateDerivative(void) {}
 
-void QuaternionsModel::ComputeNextState(void) {}
+void QuaternionsModel::ComputeNextState(double step_fraction) {}
 
 void QuaternionsModel::LoadModelParameters(void) {}
 
@@ -11,13 +11,22 @@ Vector3d QuaternionsModel::getPosition(void)
     Vector3d v;
     return v;
 }
+
+void QuaternionsModel::SetPosition(Vector3d position)
+{
+}
+
 Vector3d QuaternionsModel::getAttitude(void)
 {
     Vector3d v;
     return v;
 }
 
-void QuaternionsModel::UpdateCommand(void)
+void QuaternionsModel::SetAttitude(Vector3d attitude)
+{
+}
+
+void QuaternionsModel::UpdateCommand(SimulationData *pSd)
 {
 }
 
