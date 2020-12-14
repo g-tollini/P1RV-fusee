@@ -41,11 +41,12 @@ struct Vector3d
  */
 struct SharedMemory
 {
-    bool interfaceOn = false;
     Model model;
     Method method;
-    bool simulationTerminated;
     int step_ms;
+    bool simulationTerminated;
+    bool interfaceOn = false;
+    int next_frame_ms;
     int t_ms;
     Vector3d position;
     Vector3d attitude;

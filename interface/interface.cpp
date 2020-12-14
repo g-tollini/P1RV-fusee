@@ -29,8 +29,6 @@ SharedMemory *shm;
 sem_t *semInterface;
 sem_t *semSimulator;
 
-int nb_echanges;
-
 bool simulationInProcess = false;
 
 ref_ptr<PositionAttitudeTransform> pat(new PositionAttitudeTransform());
@@ -54,9 +52,11 @@ class MyTextCallback : public NodeCallback
 public:
     virtual void operator()(Node *n, NodeVisitor *nv)
     {
-        osgText::Text *pTextNode;
-        pTextNode = (osgText::Text *)n;
-        pTextNode->setText(to_string(shm->t_ms));
+        osg::Geode *g = static_cast<osg::Geode *>(n);
+
+        osgText::Text *txt = static_cast<osgText::Text *>(g->getDrawable(0));
+        txt->setText(to_string(shm->t_ms).c_str());
+        cout << "ok" << endl;
     }
 };
 
@@ -94,25 +94,26 @@ void HandleDisplay()
 
 void SimulationHandler(int value)
 {
-    static auto start = std::chrono::steady_clock::now();
-    static auto stop = std::chrono::steady_clock::now();
-    static int previous_step_ms = shm->step_ms;
-    static int time_to_wait = 0;
+    static auto tic = std::chrono::steady_clock::now();
+    static auto toc = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds;
+    static int previous_frame_ms = 10;
+    double coeff = 1.2;
     if (simulationInProcess)
     {
         if (int e = sem_wait(semInterface) != 0)
         {
             cout << " semInterface P error code : " << e << endl;
         }
-        stop = std::chrono::steady_clock::now();
         // Manipulate the shared memory (only) here. Be careful about thread calls
 
         cout << "t_ms = " << shm->t_ms << " ms" << endl;
-
-        elapsed_seconds = stop - start;
-        previous_step_ms = shm->step_ms;
-        shm->step_ms = max(6, (int)(1000 * elapsed_seconds.count()) - 1);
+        tic = toc;
+        toc = std::chrono::steady_clock::now();
+        elapsed_seconds = toc - tic;
+        shm->next_frame_ms = coeff * (previous_frame_ms - elapsed_seconds.count());
+        shm->next_frame_ms = max(1, shm->next_frame_ms);
+        previous_frame_ms = shm->next_frame_ms;
 
         pat->setPosition(Vec3d(shm->position.x, shm->position.y, shm->position.z));
 
@@ -121,7 +122,6 @@ void SimulationHandler(int value)
             simulationInProcess = false;
         }
 
-        start = std::chrono::steady_clock::now();
         if (int e = sem_post(semSimulator) != 0)
         {
             cout << " semSimulator V error code : " << e << endl;
@@ -131,8 +131,6 @@ void SimulationHandler(int value)
     {
         shm->step_ms = 500;
     }
-    // cout << "step : " << 1000 * elapsed_seconds.count() << " ms" << endl;
-    time_to_wait = max(0, previous_step_ms - (int)(1000 * elapsed_seconds.count()));
     return;
 }
 
@@ -184,42 +182,18 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void *printSimulationData(void *pData)
+void StartSimulation(void)
 {
-    static int t_ms_1 = 0;
-    static int t_ms_2 = 0;
-    shm = (SharedMemory *)pData;
-    while (true)
+    SharedMemoryInit(shm);
+    system("./../../e.sh");
+    cout << "Simulation lancée" << endl;
+    if (sem_post(semSimulator) != 0)
     {
-
-        if (int e = sem_wait(semInterface) != 0)
-        {
-            cout << " semInterface P error code : " << e << endl;
-        }
-        shm->t_ms = 100;
-        cout << shm->position.z;
-        sleep(0.1);
-
-        if (t_ms_1 == t_ms_2)
-        {
-            cout << "Egalite t_ms probleme !" << endl;
-        }
-        nb_echanges++;
-        cout << "nb echanges : " << nb_echanges << endl;
-        string *s = new string;
-        s->append("echo \" t_ms = ");
-        s->append(to_string(t_ms_1));
-        s->append("\"");
-        system(s->c_str());
-        // alors que :
-        // cout << s->c_str(); //casse tout !
-
-        if (int e = sem_post(semSimulator) != 0)
-        {
-            cout << " semSimulator V error code : " << e << endl;
-        }
+        cout << "semSimulator V error" << endl;
     }
-    return NULL;
+    simulationInProcess = true;
+
+    return;
 }
 
 bool StartDisplay(void)
@@ -241,10 +215,22 @@ bool StartDisplay(void)
 
     //Our shape drawable
     osg::ref_ptr<osg::ShapeDrawable> capsuledrawable(new osg::ShapeDrawable(myCapsule.get()));
-    // osg::ref_ptr<osgText::Text> text(new osgText::Text());
-    // text->setText("YO MEK");
-    // text->setUpdateCallback(new MyTextCallback());
-    // root->addChild(text.get());
+
+    // The text
+    osg::ref_ptr<osgText::Text> text(new osgText::Text());
+    text->setText("YO MEKk");
+
+    mystextgeode->addDrawable(text.get());
+    mystextgeode->setUpdateCallback(new MyTextCallback());
+
+    ref_ptr<PositionAttitudeTransform> textPAT(new PositionAttitudeTransform());
+    osg::Vec3d eye;
+    osg::Vec3d center;
+    osg::Vec3d up;
+    viewer.getCamera()->getViewMatrix().getLookAt(eye, center, up);
+    textPAT->setPosition(center);
+    root->addChild(textPAT.get());
+    textPAT->addChild(text.get());
 
     /* SCENE GRAPH*/
 
@@ -300,19 +286,4 @@ bool StartDisplay(void)
     /* START VIEWER */
     //The viewer.run() method starts the threads and the traversals.
     return (viewer.run());
-}
-
-void StartSimulation(void)
-{
-    nb_echanges = 0;
-    SharedMemoryInit(shm);
-    system("./../../e.sh");
-    cout << "Simulation lancée" << endl;
-    if (sem_post(semSimulator) != 0)
-    {
-        cout << "semSimulator V error" << endl;
-    }
-    simulationInProcess = true;
-
-    return;
 }
