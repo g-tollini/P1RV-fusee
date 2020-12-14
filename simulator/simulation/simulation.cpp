@@ -100,24 +100,12 @@ void *simulationMainLoop(void *pData)
                 cout << pSd->sharedBuffer->front() << endl;
                 pSd->sharedBuffer->pop_front();
             }
-            if (pSd->sim_untill_ms > 0)
-            {
-                // Be careful about thread calls like cout
-
-                int step_ms = pSd->pShm->step_ms < pSd->sim_untill_ms ? pSd->pShm->step_ms : pSd->sim_untill_ms;
-                pSd->sim_untill_ms -= step_ms;
-
-                pSolver->ComputeNextStep(step_ms);
-
-                pSd->pShm->t_ms += step_ms;
-            }
-            else
+            if (pSd->sim_untill_ms == 0)
             {
                 pthread_mutex_unlock(pSd->arduinoMutex);
                 pthread_mutex_lock(pSd->simulationMutex);
             }
-
-            if (pSd->pShm->interfaceOn)
+            else if (pSd->pShm->interfaceOn && (pSd->pShm->next_frame_ms == 0))
             {
                 if (int e = sem_post(semInterface) != 0)
                 {
@@ -127,6 +115,18 @@ void *simulationMainLoop(void *pData)
                 {
                     cout << " semSimulator P error code : " << e << endl;
                 }
+            }
+            else
+            {
+                // Be careful about thread calls like cout
+
+                int step_ms = min(min(pSd->pShm->step_ms, pSd->sim_untill_ms), pSd->pShm->next_frame_ms);
+                pSd->sim_untill_ms -= step_ms;
+                pSd->pShm->next_frame_ms -= step_ms;
+
+                pSolver->ComputeNextStep(step_ms);
+
+                pSd->pShm->t_ms += step_ms;
             }
         }
     }
