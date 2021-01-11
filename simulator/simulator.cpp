@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
     }
     cout << "Simulation succesfully terminated" << endl;
 
+    // PUT SIMULATION LOOP HERE
+
     return 0;
 }
 
