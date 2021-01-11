@@ -78,6 +78,17 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+
+.PHONY : test/fast
+
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
@@ -185,19 +196,6 @@ P1RV-fusee-arduino-main/fast:
 .PHONY : P1RV-fusee-arduino-main/fast
 
 #=============================================================================
-# Target rules for targets named P1RV-fusee-arduino-code
-
-# Build rule for target.
-P1RV-fusee-arduino-code: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 P1RV-fusee-arduino-code
-.PHONY : P1RV-fusee-arduino-code
-
-# fast build rule for target.
-P1RV-fusee-arduino-code/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/P1RV-fusee-arduino-code.dir/build.make simulator/arduino/fusee/CMakeFiles/P1RV-fusee-arduino-code.dir/build
-.PHONY : P1RV-fusee-arduino-code/fast
-
-#=============================================================================
 # Target rules for targets named ContinuousSubmit
 
 # Build rule for target.
@@ -207,7 +205,7 @@ ContinuousSubmit: cmake_check_build_system
 
 # fast build rule for target.
 ContinuousSubmit/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousSubmit.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousSubmit.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousSubmit.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousSubmit.dir/build
 .PHONY : ContinuousSubmit/fast
 
 #=============================================================================
@@ -220,7 +218,7 @@ ContinuousMemCheck: cmake_check_build_system
 
 # fast build rule for target.
 ContinuousMemCheck/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousMemCheck.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousMemCheck.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousMemCheck.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousMemCheck.dir/build
 .PHONY : ContinuousMemCheck/fast
 
 #=============================================================================
@@ -233,7 +231,7 @@ ContinuousConfigure: cmake_check_build_system
 
 # fast build rule for target.
 ContinuousConfigure/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousConfigure.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousConfigure.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousConfigure.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousConfigure.dir/build
 .PHONY : ContinuousConfigure/fast
 
 #=============================================================================
@@ -246,7 +244,7 @@ ExperimentalSubmit: cmake_check_build_system
 
 # fast build rule for target.
 ExperimentalSubmit/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalSubmit.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalSubmit.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalSubmit.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalSubmit.dir/build
 .PHONY : ExperimentalSubmit/fast
 
 #=============================================================================
@@ -259,7 +257,7 @@ ExperimentalMemCheck: cmake_check_build_system
 
 # fast build rule for target.
 ExperimentalMemCheck/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalMemCheck.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalMemCheck.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalMemCheck.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalMemCheck.dir/build
 .PHONY : ExperimentalMemCheck/fast
 
 #=============================================================================
@@ -272,7 +270,7 @@ ExperimentalTest: cmake_check_build_system
 
 # fast build rule for target.
 ExperimentalTest/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalTest.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalTest.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalTest.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalTest.dir/build
 .PHONY : ExperimentalTest/fast
 
 #=============================================================================
@@ -285,7 +283,7 @@ NightlyUpdate: cmake_check_build_system
 
 # fast build rule for target.
 NightlyUpdate/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyUpdate.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyUpdate.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyUpdate.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyUpdate.dir/build
 .PHONY : NightlyUpdate/fast
 
 #=============================================================================
@@ -298,7 +296,7 @@ NightlyStart: cmake_check_build_system
 
 # fast build rule for target.
 NightlyStart/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyStart.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyStart.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyStart.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyStart.dir/build
 .PHONY : NightlyStart/fast
 
 #=============================================================================
@@ -311,7 +309,7 @@ NightlyMemoryCheck: cmake_check_build_system
 
 # fast build rule for target.
 NightlyMemoryCheck/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyMemoryCheck.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyMemoryCheck.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyMemoryCheck.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyMemoryCheck.dir/build
 .PHONY : NightlyMemoryCheck/fast
 
 #=============================================================================
@@ -324,7 +322,7 @@ NightlyBuild: cmake_check_build_system
 
 # fast build rule for target.
 NightlyBuild/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyBuild.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyBuild.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyBuild.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyBuild.dir/build
 .PHONY : NightlyBuild/fast
 
 #=============================================================================
@@ -337,229 +335,8 @@ ExperimentalUpdate: cmake_check_build_system
 
 # fast build rule for target.
 ExperimentalUpdate/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalUpdate.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalUpdate.dir/build
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalUpdate.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalUpdate.dir/build
 .PHONY : ExperimentalUpdate/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousBuild
-
-# Build rule for target.
-ContinuousBuild: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ContinuousBuild
-.PHONY : ContinuousBuild
-
-# fast build rule for target.
-ContinuousBuild/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousBuild.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousBuild.dir/build
-.PHONY : ContinuousBuild/fast
-
-#=============================================================================
-# Target rules for targets named Continuous
-
-# Build rule for target.
-Continuous: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Continuous
-.PHONY : Continuous
-
-# fast build rule for target.
-Continuous/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/Continuous.dir/build.make simulator/arduino/fusee/CMakeFiles/Continuous.dir/build
-.PHONY : Continuous/fast
-
-#=============================================================================
-# Target rules for targets named Experimental
-
-# Build rule for target.
-Experimental: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Experimental
-.PHONY : Experimental
-
-# fast build rule for target.
-Experimental/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/Experimental.dir/build.make simulator/arduino/fusee/CMakeFiles/Experimental.dir/build
-.PHONY : Experimental/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalConfigure
-
-# Build rule for target.
-ExperimentalConfigure: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalConfigure
-.PHONY : ExperimentalConfigure
-
-# fast build rule for target.
-ExperimentalConfigure/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalConfigure.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalConfigure.dir/build
-.PHONY : ExperimentalConfigure/fast
-
-#=============================================================================
-# Target rules for targets named NightlyTest
-
-# Build rule for target.
-NightlyTest: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 NightlyTest
-.PHONY : NightlyTest
-
-# fast build rule for target.
-NightlyTest/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyTest.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyTest.dir/build
-.PHONY : NightlyTest/fast
-
-#=============================================================================
-# Target rules for targets named NightlyCoverage
-
-# Build rule for target.
-NightlyCoverage: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 NightlyCoverage
-.PHONY : NightlyCoverage
-
-# fast build rule for target.
-NightlyCoverage/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyCoverage.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyCoverage.dir/build
-.PHONY : NightlyCoverage/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalCoverage
-
-# Build rule for target.
-ExperimentalCoverage: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalCoverage
-.PHONY : ExperimentalCoverage
-
-# fast build rule for target.
-ExperimentalCoverage/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalCoverage.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalCoverage.dir/build
-.PHONY : ExperimentalCoverage/fast
-
-#=============================================================================
-# Target rules for targets named NightlyMemCheck
-
-# Build rule for target.
-NightlyMemCheck: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 NightlyMemCheck
-.PHONY : NightlyMemCheck
-
-# fast build rule for target.
-NightlyMemCheck/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyMemCheck.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyMemCheck.dir/build
-.PHONY : NightlyMemCheck/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousStart
-
-# Build rule for target.
-ContinuousStart: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ContinuousStart
-.PHONY : ContinuousStart
-
-# fast build rule for target.
-ContinuousStart/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousStart.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousStart.dir/build
-.PHONY : ContinuousStart/fast
-
-#=============================================================================
-# Target rules for targets named NightlySubmit
-
-# Build rule for target.
-NightlySubmit: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 NightlySubmit
-.PHONY : NightlySubmit
-
-# fast build rule for target.
-NightlySubmit/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlySubmit.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlySubmit.dir/build
-.PHONY : NightlySubmit/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousCoverage
-
-# Build rule for target.
-ContinuousCoverage: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ContinuousCoverage
-.PHONY : ContinuousCoverage
-
-# fast build rule for target.
-ContinuousCoverage/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousCoverage.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousCoverage.dir/build
-.PHONY : ContinuousCoverage/fast
-
-#=============================================================================
-# Target rules for targets named Nightly
-
-# Build rule for target.
-Nightly: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Nightly
-.PHONY : Nightly
-
-# fast build rule for target.
-Nightly/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/Nightly.dir/build.make simulator/arduino/fusee/CMakeFiles/Nightly.dir/build
-.PHONY : Nightly/fast
-
-#=============================================================================
-# Target rules for targets named NightlyConfigure
-
-# Build rule for target.
-NightlyConfigure: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 NightlyConfigure
-.PHONY : NightlyConfigure
-
-# fast build rule for target.
-NightlyConfigure/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/NightlyConfigure.dir/build.make simulator/arduino/fusee/CMakeFiles/NightlyConfigure.dir/build
-.PHONY : NightlyConfigure/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalStart
-
-# Build rule for target.
-ExperimentalStart: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalStart
-.PHONY : ExperimentalStart
-
-# fast build rule for target.
-ExperimentalStart/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalStart.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalStart.dir/build
-.PHONY : ExperimentalStart/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousTest
-
-# Build rule for target.
-ContinuousTest: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ContinuousTest
-.PHONY : ContinuousTest
-
-# fast build rule for target.
-ContinuousTest/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousTest.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousTest.dir/build
-.PHONY : ContinuousTest/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousUpdate
-
-# Build rule for target.
-ContinuousUpdate: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ContinuousUpdate
-.PHONY : ContinuousUpdate
-
-# fast build rule for target.
-ContinuousUpdate/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ContinuousUpdate.dir/build.make simulator/arduino/fusee/CMakeFiles/ContinuousUpdate.dir/build
-.PHONY : ContinuousUpdate/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalBuild
-
-# Build rule for target.
-ExperimentalBuild: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalBuild
-.PHONY : ExperimentalBuild
-
-# fast build rule for target.
-ExperimentalBuild/fast:
-	$(MAKE) -f simulator/arduino/fusee/CMakeFiles/ExperimentalBuild.dir/build.make simulator/arduino/fusee/CMakeFiles/ExperimentalBuild.dir/build
-.PHONY : ExperimentalBuild/fast
 
 #=============================================================================
 # Target rules for targets named P1RV-fusee-arduino-layer
@@ -575,6 +352,227 @@ P1RV-fusee-arduino-layer/fast:
 .PHONY : P1RV-fusee-arduino-layer/fast
 
 #=============================================================================
+# Target rules for targets named ContinuousBuild
+
+# Build rule for target.
+ContinuousBuild: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ContinuousBuild
+.PHONY : ContinuousBuild
+
+# fast build rule for target.
+ContinuousBuild/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousBuild.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousBuild.dir/build
+.PHONY : ContinuousBuild/fast
+
+#=============================================================================
+# Target rules for targets named Continuous
+
+# Build rule for target.
+Continuous: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Continuous
+.PHONY : Continuous
+
+# fast build rule for target.
+Continuous/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/Continuous.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/Continuous.dir/build
+.PHONY : Continuous/fast
+
+#=============================================================================
+# Target rules for targets named Experimental
+
+# Build rule for target.
+Experimental: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Experimental
+.PHONY : Experimental
+
+# fast build rule for target.
+Experimental/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/Experimental.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/Experimental.dir/build
+.PHONY : Experimental/fast
+
+#=============================================================================
+# Target rules for targets named ExperimentalConfigure
+
+# Build rule for target.
+ExperimentalConfigure: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalConfigure
+.PHONY : ExperimentalConfigure
+
+# fast build rule for target.
+ExperimentalConfigure/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalConfigure.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalConfigure.dir/build
+.PHONY : ExperimentalConfigure/fast
+
+#=============================================================================
+# Target rules for targets named NightlyTest
+
+# Build rule for target.
+NightlyTest: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 NightlyTest
+.PHONY : NightlyTest
+
+# fast build rule for target.
+NightlyTest/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyTest.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyTest.dir/build
+.PHONY : NightlyTest/fast
+
+#=============================================================================
+# Target rules for targets named NightlyCoverage
+
+# Build rule for target.
+NightlyCoverage: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 NightlyCoverage
+.PHONY : NightlyCoverage
+
+# fast build rule for target.
+NightlyCoverage/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyCoverage.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyCoverage.dir/build
+.PHONY : NightlyCoverage/fast
+
+#=============================================================================
+# Target rules for targets named ExperimentalCoverage
+
+# Build rule for target.
+ExperimentalCoverage: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalCoverage
+.PHONY : ExperimentalCoverage
+
+# fast build rule for target.
+ExperimentalCoverage/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalCoverage.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalCoverage.dir/build
+.PHONY : ExperimentalCoverage/fast
+
+#=============================================================================
+# Target rules for targets named NightlyMemCheck
+
+# Build rule for target.
+NightlyMemCheck: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 NightlyMemCheck
+.PHONY : NightlyMemCheck
+
+# fast build rule for target.
+NightlyMemCheck/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyMemCheck.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyMemCheck.dir/build
+.PHONY : NightlyMemCheck/fast
+
+#=============================================================================
+# Target rules for targets named ContinuousStart
+
+# Build rule for target.
+ContinuousStart: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ContinuousStart
+.PHONY : ContinuousStart
+
+# fast build rule for target.
+ContinuousStart/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousStart.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousStart.dir/build
+.PHONY : ContinuousStart/fast
+
+#=============================================================================
+# Target rules for targets named NightlySubmit
+
+# Build rule for target.
+NightlySubmit: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 NightlySubmit
+.PHONY : NightlySubmit
+
+# fast build rule for target.
+NightlySubmit/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlySubmit.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlySubmit.dir/build
+.PHONY : NightlySubmit/fast
+
+#=============================================================================
+# Target rules for targets named ContinuousCoverage
+
+# Build rule for target.
+ContinuousCoverage: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ContinuousCoverage
+.PHONY : ContinuousCoverage
+
+# fast build rule for target.
+ContinuousCoverage/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousCoverage.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousCoverage.dir/build
+.PHONY : ContinuousCoverage/fast
+
+#=============================================================================
+# Target rules for targets named Nightly
+
+# Build rule for target.
+Nightly: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Nightly
+.PHONY : Nightly
+
+# fast build rule for target.
+Nightly/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/Nightly.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/Nightly.dir/build
+.PHONY : Nightly/fast
+
+#=============================================================================
+# Target rules for targets named NightlyConfigure
+
+# Build rule for target.
+NightlyConfigure: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 NightlyConfigure
+.PHONY : NightlyConfigure
+
+# fast build rule for target.
+NightlyConfigure/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/NightlyConfigure.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/NightlyConfigure.dir/build
+.PHONY : NightlyConfigure/fast
+
+#=============================================================================
+# Target rules for targets named ExperimentalStart
+
+# Build rule for target.
+ExperimentalStart: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalStart
+.PHONY : ExperimentalStart
+
+# fast build rule for target.
+ExperimentalStart/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalStart.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalStart.dir/build
+.PHONY : ExperimentalStart/fast
+
+#=============================================================================
+# Target rules for targets named ContinuousTest
+
+# Build rule for target.
+ContinuousTest: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ContinuousTest
+.PHONY : ContinuousTest
+
+# fast build rule for target.
+ContinuousTest/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousTest.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousTest.dir/build
+.PHONY : ContinuousTest/fast
+
+#=============================================================================
+# Target rules for targets named ContinuousUpdate
+
+# Build rule for target.
+ContinuousUpdate: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ContinuousUpdate
+.PHONY : ContinuousUpdate
+
+# fast build rule for target.
+ContinuousUpdate/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousUpdate.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ContinuousUpdate.dir/build
+.PHONY : ContinuousUpdate/fast
+
+#=============================================================================
+# Target rules for targets named ExperimentalBuild
+
+# Build rule for target.
+ExperimentalBuild: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ExperimentalBuild
+.PHONY : ExperimentalBuild
+
+# fast build rule for target.
+ExperimentalBuild/fast:
+	$(MAKE) -f simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalBuild.dir/build.make simulator/arduino/my_arduino_layer/CMakeFiles/ExperimentalBuild.dir/build
+.PHONY : ExperimentalBuild/fast
+
+#=============================================================================
 # Target rules for targets named P1RV-fusee-simulation
 
 # Build rule for target.
@@ -586,6 +584,19 @@ P1RV-fusee-simulation: cmake_check_build_system
 P1RV-fusee-simulation/fast:
 	$(MAKE) -f simulator/simulation/CMakeFiles/P1RV-fusee-simulation.dir/build.make simulator/simulation/CMakeFiles/P1RV-fusee-simulation.dir/build
 .PHONY : P1RV-fusee-simulation/fast
+
+#=============================================================================
+# Target rules for targets named unit_tests
+
+# Build rule for target.
+unit_tests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 unit_tests
+.PHONY : unit_tests
+
+# fast build rule for target.
+unit_tests/fast:
+	$(MAKE) -f tests/CMakeFiles/unit_tests.dir/build.make tests/CMakeFiles/unit_tests.dir/build
+.PHONY : unit_tests/fast
 
 threading.o: threading.cpp.o
 
@@ -622,13 +633,13 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... test"
 	@echo "... P1RV-fusee-threading"
 	@echo "... package_source"
 	@echo "... package"
 	@echo "... P1RV-fusee-interface"
 	@echo "... P1RV-fusee-simulator"
 	@echo "... P1RV-fusee-arduino-main"
-	@echo "... P1RV-fusee-arduino-code"
 	@echo "... ContinuousSubmit"
 	@echo "... ContinuousMemCheck"
 	@echo "... ContinuousConfigure"
@@ -640,6 +651,7 @@ help:
 	@echo "... NightlyMemoryCheck"
 	@echo "... NightlyBuild"
 	@echo "... ExperimentalUpdate"
+	@echo "... P1RV-fusee-arduino-layer"
 	@echo "... ContinuousBuild"
 	@echo "... Continuous"
 	@echo "... Experimental"
@@ -657,8 +669,8 @@ help:
 	@echo "... ContinuousTest"
 	@echo "... ContinuousUpdate"
 	@echo "... ExperimentalBuild"
-	@echo "... P1RV-fusee-arduino-layer"
 	@echo "... P1RV-fusee-simulation"
+	@echo "... unit_tests"
 	@echo "... threading.o"
 	@echo "... threading.i"
 	@echo "... threading.s"
