@@ -69,21 +69,6 @@ public:
         case 'a':
             StartSimulation();
             break;
-        case 'e':
-            if (!shm->simulationTerminated)
-            {
-                if (int e = sem_wait(semInterface) != 0)
-                {
-                    cout << " semInterface P error code : " << e << endl;
-                }
-                // Manipulate the shared memory (only) here. Be careful about thread calls
-
-                if (int e = sem_post(semSimulator) != 0)
-                {
-                    cout << " semSimulator V error code : " << e << endl;
-                }
-            }
-            break;
         default:
             break;
         }
@@ -183,7 +168,7 @@ int main(int argc, char **argv)
 void StartSimulation(void)
 {
     SharedMemoryInit(shm);
-    system("./../../e.sh");
+    system("/home/guillaume/centrale/P1RV-fusee/e.sh");
     cout << "Simulation lancée" << endl;
     if (sem_post(semSimulator) != 0)
     {
