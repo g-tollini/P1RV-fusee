@@ -15,6 +15,7 @@
 // Keyboard input
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/StateSetManipulator>
+#include <osgGA/GUIEventHandler>
 
 #include <osgDB/ReadFile>
 
@@ -28,8 +29,6 @@ using namespace osg;
 SharedMemory *shm;
 sem_t *semInterface;
 sem_t *semSimulator;
-
-int nb_echanges;
 
 bool simulationInProcess = false;
 
@@ -54,65 +53,66 @@ class MyTextCallback : public NodeCallback
 public:
     virtual void operator()(Node *n, NodeVisitor *nv)
     {
-        osgText::Text *pTextNode;
-        pTextNode = (osgText::Text *)n;
-        pTextNode->setText(to_string(shm->t_ms));
+
+        osgText::Text *txt = static_cast<osgText::Text *>(n);
+        txt->setText(to_string(shm->t_ms).c_str());
     }
 };
 
-void KeyboardHandler(unsigned char key, int xpix, int ypix)
+class KeyboardHandler : public osgGA::GUIEventHandler
 {
-    switch (key)
+public:
+    virtual bool handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &)
     {
-    case 'a':
-        StartSimulation();
-        break;
-    case 'e':
-        if (!shm->simulationTerminated)
+        switch (ea.getKey())
         {
-            if (int e = sem_wait(semInterface) != 0)
+        case 'a':
+            StartSimulation();
+            break;
+        case 'e':
+            if (!shm->simulationTerminated)
             {
-                cout << " semInterface P error code : " << e << endl;
-            }
-            // Manipulate the shared memory (only) here. Be careful about thread calls
+                if (int e = sem_wait(semInterface) != 0)
+                {
+                    cout << " semInterface P error code : " << e << endl;
+                }
+                // Manipulate the shared memory (only) here. Be careful about thread calls
 
-            if (int e = sem_post(semSimulator) != 0)
-            {
-                cout << " semSimulator V error code : " << e << endl;
+                if (int e = sem_post(semSimulator) != 0)
+                {
+                    cout << " semSimulator V error code : " << e << endl;
+                }
             }
+            break;
+        default:
+            break;
         }
-        break;
-    default:
-        break;
+        return false;
     }
-    return;
-}
-
-void HandleDisplay()
-{
-}
+};
 
 void SimulationHandler(int value)
 {
-    static auto start = std::chrono::steady_clock::now();
-    static auto stop = std::chrono::steady_clock::now();
-    static int previous_step_ms = shm->step_ms;
-    static int time_to_wait = 0;
+    static auto tic = std::chrono::steady_clock::now();
+    static auto toc = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds;
+    static int previous_frame_ms = 10;
+    double coeff = 1.0;
     if (simulationInProcess)
     {
         if (int e = sem_wait(semInterface) != 0)
         {
             cout << " semInterface P error code : " << e << endl;
         }
-        stop = std::chrono::steady_clock::now();
         // Manipulate the shared memory (only) here. Be careful about thread calls
 
         cout << "t_ms = " << shm->t_ms << " ms" << endl;
-
-        elapsed_seconds = stop - start;
-        previous_step_ms = shm->step_ms;
-        shm->step_ms = max(6, (int)(1000 * elapsed_seconds.count()) - 1);
+        tic = toc;
+        toc = std::chrono::steady_clock::now();
+        elapsed_seconds = toc - tic;
+        shm->next_frame_ms = coeff * (previous_frame_ms - elapsed_seconds.count());
+        shm->next_frame_ms = max(1, shm->next_frame_ms);
+        previous_frame_ms = shm->next_frame_ms;
 
         pat->setPosition(Vec3d(shm->position.x, shm->position.y, shm->position.z));
 
@@ -121,7 +121,6 @@ void SimulationHandler(int value)
             simulationInProcess = false;
         }
 
-        start = std::chrono::steady_clock::now();
         if (int e = sem_post(semSimulator) != 0)
         {
             cout << " semSimulator V error code : " << e << endl;
@@ -131,8 +130,6 @@ void SimulationHandler(int value)
     {
         shm->step_ms = 500;
     }
-    // cout << "step : " << 1000 * elapsed_seconds.count() << " ms" << endl;
-    time_to_wait = max(0, previous_step_ms - (int)(1000 * elapsed_seconds.count()));
     return;
 }
 
@@ -174,7 +171,6 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    StartSimulation();
     StartDisplay();
 
     sem_close(semInterface);
@@ -184,43 +180,21 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void *printSimulationData(void *pData)
+void StartSimulation(void)
 {
-    static int t_ms_1 = 0;
-    static int t_ms_2 = 0;
-    shm = (SharedMemory *)pData;
-    while (true)
+    SharedMemoryInit(shm);
+    system("./../../e.sh");
+    cout << "Simulation lancée" << endl;
+    if (sem_post(semSimulator) != 0)
     {
-
-        if (int e = sem_wait(semInterface) != 0)
-        {
-            cout << " semInterface P error code : " << e << endl;
-        }
-        shm->t_ms = 100;
-        cout << shm->position.z;
-        sleep(0.1);
-
-        if (t_ms_1 == t_ms_2)
-        {
-            cout << "Egalite t_ms probleme !" << endl;
-        }
-        nb_echanges++;
-        cout << "nb echanges : " << nb_echanges << endl;
-        string *s = new string;
-        s->append("echo \" t_ms = ");
-        s->append(to_string(t_ms_1));
-        s->append("\"");
-        system(s->c_str());
-        // alors que :
-        // cout << s->c_str(); //casse tout !
-
-        if (int e = sem_post(semSimulator) != 0)
-        {
-            cout << " semSimulator V error code : " << e << endl;
-        }
+        cout << "semSimulator V error" << endl;
     }
-    return NULL;
+    simulationInProcess = true;
+
+    return;
 }
+
+osg::Camera *createHUD();
 
 bool StartDisplay(void)
 {
@@ -241,10 +215,14 @@ bool StartDisplay(void)
 
     //Our shape drawable
     osg::ref_ptr<osg::ShapeDrawable> capsuledrawable(new osg::ShapeDrawable(myCapsule.get()));
-    // osg::ref_ptr<osgText::Text> text(new osgText::Text());
-    // text->setText("YO MEK");
-    // text->setUpdateCallback(new MyTextCallback());
-    // root->addChild(text.get());
+
+    ref_ptr<PositionAttitudeTransform> textPAT(new PositionAttitudeTransform());
+    osg::Vec3d eye;
+    osg::Vec3d center;
+    osg::Vec3d up;
+    viewer.getCamera()->getViewMatrix().getLookAt(eye, center, up);
+    textPAT->setPosition(center);
+    root->addChild(textPAT.get());
 
     /* SCENE GRAPH*/
 
@@ -261,6 +239,7 @@ bool StartDisplay(void)
     viewer.setSceneData(root.get());
 
     /* KEYBOARD INPUT */
+    viewer.addEventHandler(new KeyboardHandler);
 
     //Stats Event Handler s key
     viewer.addEventHandler(new osgViewer::StatsHandler);
@@ -297,26 +276,69 @@ bool StartDisplay(void)
 
     root->setUpdateCallback(new MyUpdateCallback());
 
+    osg::Camera *hudCamera = createHUD();
+    viewer.setUpViewAcrossAllScreens();
+    osgViewer::Viewer::Windows windows;
+    viewer.getWindows(windows);
+    hudCamera->setGraphicsContext(windows[0]);
+    hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+
+    viewer.addSlave(hudCamera, false);
+
     /* START VIEWER */
     //The viewer.run() method starts the threads and the traversals.
     return (viewer.run());
 }
 
-void StartSimulation(void)
+osg::Camera *createHUD()
 {
-    nb_echanges = 0;
-    SharedMemoryInit(shm);
-#ifdef E_SH
-    system(E_SH);
-#else
-    system("./e.sh");
-#endif
-    cout << "Simulation lancée" << endl;
-    if (sem_post(semSimulator) != 0)
-    {
-        cout << "semSimulator V error" << endl;
-    }
-    simulationInProcess = true;
+    // create a camera to set up the projection and model view matrices, and the subgraph to draw in the HUD
+    osg::Camera *camera = new osg::Camera;
 
-    return;
+    // set the projection matrix
+    camera->setProjectionMatrix(osg::Matrix::ortho2D(0, 1280, 0, 1024));
+
+    // set the view matrix
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setViewMatrix(osg::Matrix::identity());
+
+    // only clear the depth buffer
+    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+
+    // draw subgraph after main camera view.
+    camera->setRenderOrder(osg::Camera::POST_RENDER);
+
+    // we don't want the camera to grab event focus from the viewers main camera(s).
+    camera->setAllowEventFocus(false);
+
+    // add to this camera a subgraph to render
+    {
+
+        osg::Geode *geode = new osg::Geode();
+
+        // std::string timesFont("fonts/arial.ttf");
+
+        // turn lighting off for the text and disable depth test to ensure it's always ontop.
+        osg::StateSet *stateset = geode->getOrCreateStateSet();
+        stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+        osg::Vec3 position(150.0f, 800.0f, 0.0f);
+        osg::Vec3 delta(0.0f, -120.0f, 0.0f);
+
+        {
+            osgText::Text *text = new osgText::Text;
+            geode->addDrawable(text);
+
+            // text->setFont(timesFont);
+            text->setPosition(position);
+            text->setText("0");
+            text->addUpdateCallback(new MyTextCallback);
+
+            position += delta;
+        }
+
+        camera->addChild(geode);
+    }
+
+    return camera;
 }

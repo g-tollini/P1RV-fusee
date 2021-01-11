@@ -122,7 +122,7 @@ void CardanModel::ComputeStateDerivative(void)
     dStatedt.block<3, 1>(6, 0) = j_1 * nu.block<3, 1>(0, 0);
     dStatedt.block<3, 1>(9, 0) = j_2 * nu.block<3, 1>(3, 0);
 }
-void CardanModel::ComputeNextState(void) {}
+void CardanModel::ComputeNextState(double step_fraction) {}
 
 void CardanModel::LoadModelParameters(void) {}
 
@@ -131,13 +131,22 @@ Vector3d CardanModel::getPosition(void)
     Vector3d v;
     return v;
 }
+
+void CardanModel::SetPosition(Vector3d position)
+{
+}
+
 Vector3d CardanModel::getAttitude(void)
 {
     Vector3d v;
     return v;
 }
 
-void CardanModel::UpdateCommand(void)
+void CardanModel::SetAttitude(Vector3d attitude)
+{
+}
+
+void CardanModel::UpdateCommand(SimulationData *pSd)
 {
 }
 

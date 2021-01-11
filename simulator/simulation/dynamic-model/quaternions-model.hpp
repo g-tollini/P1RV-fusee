@@ -8,14 +8,15 @@ typedef int quaternions_command_t;
 class QuaternionsModel : public DynamicModel
 {
 public:
-    QuaternionsModel(SimulationData *_pSd) : DynamicModel(_pSd){};
     void ComputeStateDerivative(void);
-    void ComputeNextState(void);
+    void ComputeNextState(double step_fraction);
     void LoadModelParameters(void);
 
     Vector3d getPosition(void);
+    void SetPosition(Vector3d);
     Vector3d getAttitude(void);
-    void UpdateCommand(void);
+    void SetAttitude(Vector3d);
+    void UpdateCommand(SimulationData *sd);
     void BufferizeState(int bufferIndex);
     void LoadState(int bufferIndex);
     void BufferizeStateDerivative(int bufferIndex);

@@ -12,14 +12,16 @@ typedef double simple_command_t;        // booster_thrust
 class SimpleModel : public DynamicModel
 {
 public:
-    SimpleModel(SimulationData *_pSd);
+    SimpleModel();
     void ComputeStateDerivative(void);
-    void ComputeNextState(void);
+    void ComputeNextState(double step_fraction);
     void LoadModelParameters(void);
 
     Vector3d getPosition(void);
+    void SetPosition(Vector3d);
     Vector3d getAttitude(void);
-    void UpdateCommand(void);
+    void SetAttitude(Vector3d);
+    void UpdateCommand(SimulationData *pSd);
     void BufferizeState(int bufferIndex);
     void LoadState(int bufferIndex);
     void BufferizeStateDerivative(int bufferIndex);
