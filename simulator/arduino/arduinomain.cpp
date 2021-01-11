@@ -49,6 +49,7 @@ void *arduinoMain(void *pData)
         }
         else
         {
+            delay(1);
             loop();
         }
     }

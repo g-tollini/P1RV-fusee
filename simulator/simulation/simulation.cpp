@@ -45,8 +45,6 @@ void *simulationMainLoop(void *pData)
         {
             cout << " semSimulator P error code : " << e << endl;
         }
-
-        cout << "Simulation loop entered, interface is on\n";
     }
 
     DynamicModel *pDynMod;
@@ -87,9 +85,11 @@ void *simulationMainLoop(void *pData)
     pDynMod->SetPosition(pSd->pShm->position);
     pDynMod->SetAttitude(pSd->pShm->attitude);
 
+    // ...
+    pSd->pShm->simulationTerminated = false;
+
     while (true)
     {
-        cout << "Loop" << endl;
         pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 60000;
         if (pSd->pShm->simulationTerminated)
         {
@@ -132,13 +132,18 @@ void *simulationMainLoop(void *pData)
             {
                 // Be careful about thread calls like cout
 
-                int step_ms = min(min(pSd->pShm->step_ms, pSd->sim_untill_ms), pSd->pShm->next_frame_ms);
-                pSd->sim_untill_ms -= step_ms;
+                int step_ms = min(pSd->pShm->step_ms, pSd->sim_untill_ms);
+                if (pSd->pShm->interfaceOn)
+                {
+                    step_ms = min(step_ms, pSd->pShm->next_frame_ms);
+                }
+
                 pSd->pShm->next_frame_ms -= step_ms;
 
                 pSolver->UpdateCommand(pSd);
                 pSolver->ComputeNextState(step_ms);
 
+                // Update the output
                 pSd->pShm->position = pDynMod->getPosition();
                 pSd->pShm->attitude = pDynMod->getAttitude();
 
