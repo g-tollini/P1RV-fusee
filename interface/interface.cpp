@@ -15,6 +15,7 @@
 // Keyboard input
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/StateSetManipulator>
+#include <osgGA/GUIEventHandler>
 
 #include <osgDB/ReadFile>
 
@@ -52,45 +53,43 @@ class MyTextCallback : public NodeCallback
 public:
     virtual void operator()(Node *n, NodeVisitor *nv)
     {
-        osg::Geode *g = static_cast<osg::Geode *>(n);
 
-        osgText::Text *txt = static_cast<osgText::Text *>(g->getDrawable(0));
+        osgText::Text *txt = static_cast<osgText::Text *>(n);
         txt->setText(to_string(shm->t_ms).c_str());
-        cout << "ok" << endl;
     }
 };
 
-void KeyboardHandler(unsigned char key, int xpix, int ypix)
+class KeyboardHandler : public osgGA::GUIEventHandler
 {
-    switch (key)
+public:
+    virtual bool handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &)
     {
-    case 'a':
-        StartSimulation();
-        break;
-    case 'e':
-        if (!shm->simulationTerminated)
+        switch (ea.getKey())
         {
-            if (int e = sem_wait(semInterface) != 0)
+        case 'a':
+            StartSimulation();
+            break;
+        case 'e':
+            if (!shm->simulationTerminated)
             {
-                cout << " semInterface P error code : " << e << endl;
-            }
-            // Manipulate the shared memory (only) here. Be careful about thread calls
+                if (int e = sem_wait(semInterface) != 0)
+                {
+                    cout << " semInterface P error code : " << e << endl;
+                }
+                // Manipulate the shared memory (only) here. Be careful about thread calls
 
-            if (int e = sem_post(semSimulator) != 0)
-            {
-                cout << " semSimulator V error code : " << e << endl;
+                if (int e = sem_post(semSimulator) != 0)
+                {
+                    cout << " semSimulator V error code : " << e << endl;
+                }
             }
+            break;
+        default:
+            break;
         }
-        break;
-    default:
-        break;
+        return false;
     }
-    return;
-}
-
-void HandleDisplay()
-{
-}
+};
 
 void SimulationHandler(int value)
 {
@@ -98,7 +97,7 @@ void SimulationHandler(int value)
     static auto toc = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds;
     static int previous_frame_ms = 10;
-    double coeff = 1.2;
+    double coeff = 1.0;
     if (simulationInProcess)
     {
         if (int e = sem_wait(semInterface) != 0)
@@ -172,7 +171,6 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    StartSimulation();
     StartDisplay();
 
     sem_close(semInterface);
@@ -218,13 +216,6 @@ bool StartDisplay(void)
     //Our shape drawable
     osg::ref_ptr<osg::ShapeDrawable> capsuledrawable(new osg::ShapeDrawable(myCapsule.get()));
 
-    // The text
-    osg::ref_ptr<osgText::Text> text(new osgText::Text());
-    text->setText("YO MEKk");
-
-    mystextgeode->addDrawable(text.get());
-    mystextgeode->setUpdateCallback(new MyTextCallback());
-
     ref_ptr<PositionAttitudeTransform> textPAT(new PositionAttitudeTransform());
     osg::Vec3d eye;
     osg::Vec3d center;
@@ -232,7 +223,6 @@ bool StartDisplay(void)
     viewer.getCamera()->getViewMatrix().getLookAt(eye, center, up);
     textPAT->setPosition(center);
     root->addChild(textPAT.get());
-    textPAT->addChild(text.get());
 
     /* SCENE GRAPH*/
 
@@ -249,6 +239,7 @@ bool StartDisplay(void)
     viewer.setSceneData(root.get());
 
     /* KEYBOARD INPUT */
+    viewer.addEventHandler(new KeyboardHandler);
 
     //Stats Event Handler s key
     viewer.addEventHandler(new osgViewer::StatsHandler);
@@ -285,14 +276,14 @@ bool StartDisplay(void)
 
     root->setUpdateCallback(new MyUpdateCallback());
 
-    // osg::Camera *hudCamera = createHUD();
-    // viewer.setUpViewAcrossAllScreens();
-    // osgViewer::Viewer::Windows windows;
-    // viewer.getWindows(windows);
-    // hudCamera->setGraphicsContext(windows[0]);
-    // hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+    osg::Camera *hudCamera = createHUD();
+    viewer.setUpViewAcrossAllScreens();
+    osgViewer::Viewer::Windows windows;
+    viewer.getWindows(windows);
+    hudCamera->setGraphicsContext(windows[0]);
+    hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
 
-    // viewer.addSlave(hudCamera, false);
+    viewer.addSlave(hudCamera, false);
 
     /* START VIEWER */
     //The viewer.run() method starts the threads and the traversals.
@@ -340,65 +331,8 @@ osg::Camera *createHUD()
 
             // text->setFont(timesFont);
             text->setPosition(position);
-            text->setText("Head Up Displays are simple :-)");
-
-            position += delta;
-        }
-
-        {
-            osgText::Text *text = new osgText::Text;
-            geode->addDrawable(text);
-
-            // text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("All you need to do is create your text in a subgraph.");
-
-            position += delta;
-        }
-
-        {
-            osgText::Text *text = new osgText::Text;
-            geode->addDrawable(text);
-
-            // text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("Then place an osg::Camera above the subgraph\n"
-                          "to create an orthographic projection.\n");
-
-            position += delta;
-        }
-
-        {
-            osgText::Text *text = new osgText::Text;
-            geode->addDrawable(text);
-
-            // text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("Set the Camera's ReferenceFrame to ABSOLUTE_RF to ensure\n"
-                          "it remains independent from any external model view matrices.");
-
-            position += delta;
-        }
-
-        {
-            osgText::Text *text = new osgText::Text;
-            geode->addDrawable(text);
-
-            // text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("And set the Camera's clear mask to just clear the depth buffer.");
-
-            position += delta;
-        }
-
-        {
-            osgText::Text *text = new osgText::Text;
-            geode->addDrawable(text);
-
-            // text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("And finally set the Camera's RenderOrder to POST_RENDER\n"
-                          "to make sure it's drawn last.");
+            text->setText("0");
+            text->addUpdateCallback(new MyTextCallback);
 
             position += delta;
         }
