@@ -21,9 +21,6 @@ void Euler::ComputeNextState(int step_ms)
     pDynMod->ComputeStateDerivative();
     // This computes the current state derivative
     pDynMod->ComputeNextState(step_fraction);
-
-    pShm->position = pDynMod->getPosition();
-    pShm->attitude = pDynMod->getAttitude();
 }
 
 void RungeKutta2::ComputeNextState(int step_ms)
@@ -36,9 +33,6 @@ void RungeKutta2::ComputeNextState(int step_ms)
     pDynMod->ComputeStateDerivative();
     // This computes the current state derivative
     pDynMod->ComputeNextState(step_fraction);
-
-    pShm->position = pDynMod->getPosition();
-    pShm->attitude = pDynMod->getAttitude();
 }
 
 void RungeKutta4::ComputeNextState(int step_ms)

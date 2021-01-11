@@ -18,7 +18,6 @@ public:
 
 protected:
     DynamicModel *pDynMod;
-    SharedMemory *pShm;
 };
 
 /**

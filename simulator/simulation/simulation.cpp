@@ -53,12 +53,15 @@ void *simulationMainLoop(void *pData)
     switch (pSd->pShm->model)
     {
     case Cardan:
+        cout << "Dynamic model is : Cardan model" << endl;
         pDynMod = new CardanModel();
         break;
     case Quaternions:
+        cout << "Dynamic model is : Quaternions model" << endl;
         pDynMod = new QuaternionsModel();
         break;
     default:
+        cout << "Dynamic model is : Simple model" << endl;
         pDynMod = new SimpleModel();
         break;
     }
@@ -67,12 +70,15 @@ void *simulationMainLoop(void *pData)
     switch (pSd->pShm->method)
     {
     case methodEuler:
+        cout << "Solver is : Euler" << endl;
         pSolver = new Euler(pDynMod);
         break;
     case methodRK4:
+        cout << "Solver is : RK4" << endl;
         pSolver = new RungeKutta4(pDynMod);
         break;
     default:
+        cout << "Solver is : Euler" << endl;
         pSolver = new Euler(pDynMod);
         break;
     }
@@ -83,6 +89,7 @@ void *simulationMainLoop(void *pData)
 
     while (true)
     {
+        cout << "Loop" << endl;
         pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 60000;
         if (pSd->pShm->simulationTerminated)
         {
@@ -131,6 +138,9 @@ void *simulationMainLoop(void *pData)
 
                 pSolver->UpdateCommand(pSd);
                 pSolver->ComputeNextState(step_ms);
+
+                pSd->pShm->position = pDynMod->getPosition();
+                pSd->pShm->attitude = pDynMod->getAttitude();
 
                 pSd->pShm->t_ms += step_ms;
             }
