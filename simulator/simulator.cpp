@@ -18,10 +18,13 @@ bool interfaceOn = false;
  */
 int main(int argc, char *argv[])
 {
+
+    SharedMemory *pShm = new SharedMemory;
+
     SimulationData *pSd = new SimulationData;
     SimulationDataInit(pSd);
 
-    SharedMemory *pShm = new SharedMemory;
+    pSd->pShm = pShm;
 
     bool interfaceOn = false;
 
@@ -37,7 +40,7 @@ int main(int argc, char *argv[])
     {
         //Creates a file descriptor
         int segmentFileDescriptor = shm_open(SHM_FILE_NAME, O_RDWR, S_IRUSR | S_IWUSR);
-        cout << "Code shm_open : " << segmentFileDescriptor << endl;
+        cout << "Interface on, code shm_open : " << segmentFileDescriptor << endl;
         if (segmentFileDescriptor == -1)
         {
             exit(1);
@@ -47,6 +50,8 @@ int main(int argc, char *argv[])
         off_t memOffset = 0;
         void *shmPtr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, segmentFileDescriptor, memOffset);
         pSd->pShm = (SharedMemory *)shmPtr;
+
+        cout << "Shared memory correctly mapped" << endl;
     }
     else
     {

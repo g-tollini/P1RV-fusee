@@ -81,8 +81,6 @@ void SimulationHandler(int value)
     static auto tic = std::chrono::steady_clock::now();
     static auto toc = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds;
-    static int previous_frame_ms = 10;
-    double coeff = 1.0;
     if (simulationInProcess)
     {
         if (int e = sem_wait(semInterface) != 0)
@@ -91,13 +89,7 @@ void SimulationHandler(int value)
         }
         // Manipulate the shared memory (only) here. Be careful about thread calls
 
-        cout << "t_ms = " << shm->t_ms << " ms" << endl;
-        tic = toc;
-        toc = std::chrono::steady_clock::now();
-        elapsed_seconds = toc - tic;
-        shm->next_frame_ms = coeff * (previous_frame_ms - elapsed_seconds.count());
-        shm->next_frame_ms = max(1, shm->next_frame_ms);
-        previous_frame_ms = shm->next_frame_ms;
+        shm->next_frame_ms = 10;
 
         pat->setPosition(Vec3d(shm->position.x, shm->position.y, shm->position.z));
 
@@ -111,10 +103,7 @@ void SimulationHandler(int value)
             cout << " semSimulator V error code : " << e << endl;
         }
     }
-    else
-    {
-        shm->step_ms = 500;
-    }
+
     return;
 }
 
@@ -169,7 +158,6 @@ void StartSimulation(void)
 {
     SharedMemoryInit(shm);
     system("/home/guillaume/centrale/P1RV-fusee/e.sh");
-    cout << "Simulation lancée" << endl;
     if (sem_post(semSimulator) != 0)
     {
         cout << "semSimulator V error" << endl;

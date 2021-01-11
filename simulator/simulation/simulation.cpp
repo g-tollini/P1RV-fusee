@@ -46,8 +46,9 @@ void *simulationMainLoop(void *pData)
             cout << " semSimulator P error code : " << e << endl;
         }
 
-        cout << "salut" << endl;
+        cout << "Simulation loop entered, interface is on\n";
     }
+
     DynamicModel *pDynMod;
     switch (pSd->pShm->model)
     {

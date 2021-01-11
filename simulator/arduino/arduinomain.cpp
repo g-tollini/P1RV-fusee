@@ -8,6 +8,11 @@ HeightSensor heightSensor;
 
 void silent_delay(int delay_ms)
 {
+    if (pSd->pShm->simulationTerminated)
+    {
+        pthread_exit(nullptr);
+        return; // skip this function
+    }
     pSd->sim_untill_ms = delay_ms;
     pthread_mutex_unlock(pSd->simulationMutex);
     pthread_mutex_lock(pSd->arduinoMutex);
@@ -40,12 +45,12 @@ void *arduinoMain(void *pData)
         if (pSd->pShm->simulationTerminated)
         {
             pthread_mutex_unlock(pSd->simulationMutex);
-            pthread_exit(NULL);
+            pthread_exit(nullptr);
         }
         else
         {
             loop();
         }
     }
-    return NULL;
+    return nullptr;
 }
