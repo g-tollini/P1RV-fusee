@@ -313,10 +313,7 @@ osg::Camera *createHUD()
 
     // add to this camera a subgraph to render
     {
-
         osg::Geode *geode = new osg::Geode();
-
-        // std::string timesFont("fonts/arial.ttf");
 
         // turn lighting off for the text and disable depth test to ensure it's always ontop.
         osg::StateSet *stateset = geode->getOrCreateStateSet();
