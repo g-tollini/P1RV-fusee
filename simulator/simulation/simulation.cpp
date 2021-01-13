@@ -85,9 +85,6 @@ void *simulationMainLoop(void *pData)
     pDynMod->SetPosition(pSd->pShm->position);
     pDynMod->SetAttitude(pSd->pShm->attitude);
 
-    // ...
-    pSd->pShm->simulationTerminated = false;
-
     while (true)
     {
         pSd->pShm->simulationTerminated |= pSd->pShm->t_ms > 60000;

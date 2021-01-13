@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     else
     {
         cout << "Interface off" << endl;
-        pSd->pShm->step_ms = 20;
+        pSd->pShm->step_ms = 10;
     }
 
     pthread_mutex_lock(pSd->arduinoMutex);
