@@ -17,6 +17,10 @@ message("Background file located here : " ${BKG_LOC})
 message("e.sh located here : " ${E_SH_LOC})
 add_definitions(-DBACKGROUND_LOC=${BKG_LOC} -DE_SH=${E_SH_LOC})
 
+if (${APPLE})
+add_definitions(-D__APPLE__)
+endif()
+
 add_executable(
   ${EXEC_NAME}
   interface.cpp
@@ -26,11 +30,22 @@ add_library(testlib SHARED IMPORTED)
 set_property(TARGET testlib PROPERTY IMPORTED_LOCATION "~/developpement/OpenSceneGraph/build/lib/osgPlugins-3.7.0/osgdb_stld.so")
 
 
-target_link_libraries(${EXEC_NAME} 
-  P1RV-fusee-threading
-  pthread
-  rt
-  GL
-  glut
-  ${OPENSCENEGRAPH_LIBRARIES}
-  osgdb_stld)
+if (${APPLE})
+  target_link_libraries(${EXEC_NAME} 
+    P1RV-fusee-threading
+    pthread
+    rt
+    GL
+    glut
+    ${OPENSCENEGRAPH_LIBRARIES}
+    osgdb_stld)
+elseif (${UNIX})
+  target_link_libraries(${EXEC_NAME} 
+    P1RV-fusee-threading
+    pthread
+    rt
+    GL
+    glut
+    ${OPENSCENEGRAPH_LIBRARIES}
+    osgdb_stld)
+endif()

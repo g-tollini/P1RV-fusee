@@ -1,9 +1,14 @@
 #include <iostream>
 #include <chrono>
 
+#ifndef __APPLE__
 #include "GL/freeglut.h"
 #include "GL/glut.h"
 #include "GL/gl.h"
+#else
+#include "OPENGL/gl.h"
+#include "GLUT/glut.h"
+#endif
 
 // base
 #include <osgViewer/Viewer>
