@@ -34,27 +34,6 @@
 # Documentation
 *.pdf
 
-# Cmake output files
-# Maybe I should consider building these files outside 
-# of the git project but for the moment I will do this
+# Cmake output directory
 build/
-simulator/build/
-simulator/CMakeFiles/
-simulator/simulation/build/
-simulator/simulation/CMakeFiles/
-simulator/arduino/build/
-simulator/arduino/CMakeFiles/
-simulator/arduino/my_arduino_layer/build/
-simulator/arduino/my_arduino_layer/CMakeFiles/
-simulator/arduino/my_arduino_layer/serial/build/
-simulator/arduino/fusee/build/
-simulator/arduino/fusee/CMakeFiles/
-simulator/arduino/fusee/*.cpp
-Makefile
-*.json
-*.cmake
-*.make
-CMakeCache.txt
-CMakeFiles/
-Makefile
-*.tcl
+CMakeModules/

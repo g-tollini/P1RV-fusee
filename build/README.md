@@ -1,1 +1,0 @@
-Sert à ce que le fichier build soit dans le dépôt git
