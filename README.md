@@ -7,7 +7,7 @@ How to run the executables :
 Go in the folder of your choice and in the console, type :
 
 `$ git clone https://github.com/g-tollini/P1RV-fusee`  
-`$ cd P1RV-fusee` 
+`$ cd P1RV-fusee`  
 `$ mkdir build && cd build`    
 `$ cmake ../ && make`  
 In order to start the graphic user iterface, type :  
@@ -26,16 +26,18 @@ You can install everything you need to build this code with the build-essentials
 `$ sudo apt upgrade`  
 `$ sudo apt install build-essentials`  
 
-Bibliothèques requises :
-+ OpenGL
-+ Freeglut
-+ OpenSceneGraph
-+ pthread an rt
+Bibliothèques requises :  
++ OpenGL that you should alredy have on your computer  
++ Freeglut `$ sudo apt install freeglut3-dev`  
++ OpenSceneGraph to be found here : https://github.com/openscenegraph/OpenSceneGraph  
++ pthread an rt should be on your computer  
+
+To find any library, you can type `$ ld -l <your_lib_name> --verbose`. Type whatever as a name to see all the folders where the linker is searching.
 
 <h2>If needed, cpoy OSG's .stl loader compiled library file in a folder where the linker is searching</h2>
 When installing OpenSceneGraph, the .stl loader is not necessarily placed inside a folder where the linker will search. You will need to do it manually.
 
-The static library file that we need to load .stl files is located in *OpenSceneGraph/build/lib/osgPlugins-3.7.0/* (*OpenSceneGraph/* is where you did your git clone https://github.com/openscenegraph/OpenSceneGraph). The static library is named **osgdb_stld.so**. 
+The static library file that we need to load .stl files is located in *OpenSceneGraph/build/lib/osgPlugins-3.7.0/* (*OpenSceneGraph/* is where you did your `$ git clone https://github.com/openscenegraph/OpenSceneGraph`). The static library is named **osgdb_stld.so**. 
 
 If you tyupe the command `$ ld -l whatever --verbose`, unless the library whatever actually exists which I suppose it doesn't, you get all the repositories in which your linker is searching when you ask him to link. You can choose which. I choose */usr/lib* so I will place **osgdb_stld.so** there while renaming it : sudo cp *<yours_to_fill>/OpenSceneGraph/build/lib/osgPlugins-3.7.0/***osgdb_stld.so**** */usr/lib/***libosgdb_stld.so****.
 You could also create a symbolic link instead :
