@@ -22,9 +22,9 @@ Logiciels requis :
 make, g++  
 
 You can install everything you need to build this code with the build-essentials package :  
-`$ sudo apt update  
-$ sudo apt upgrade  
-$ sudo apt install build-essentials`  
+`$ sudo apt update`  
+`$ sudo apt upgrade`  
+`$ sudo apt install build-essentials`  
 
 Bibliothèques requises :
 + OpenGL
