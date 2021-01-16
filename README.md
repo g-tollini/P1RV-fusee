@@ -1,28 +1,44 @@
 # P1RV-fusee
 Simulateur de fusée en 3D
 
-# IMPORTANT
-Je vais rendre tout propre le plus vite possible mais ce n'étais pas ma priorité jusqu'ici... notamment sur la procédure d'installation/de configuration.
+# Installation
+How to run the executables :
 
-# Installation, compilation
+go in the folder of your choice and in the console, type :
+
+git clone https://github.com/g-tollini/P1RV-fusee
+cd P1RV-fusee
+mkdir build && cd build
+cmake ../ && make
+In order to start the graphic user iterface, type :
+./interface/P1RV-interface
+You can start simulations without the gui, to do so type :
+./simulator/P1RV-simulator
+
+If something goes wrong, I list below some solutions to problems that might have happened. I hope that you will find the solution that suits your situation.
+
+# Compilation
 Logiciels requis :
 make, g++
 
+You can install everything you need to build this code with the build-essentials package :
+sudo apt update
+sudo apt upgrade
+sudo apt install build-essentials
+
 Bibliothèques requises :
-OpenGL, freeglut
++ OpenGL
++ Freeglut
++ OpenSceneGraph
++ pthread an rt
 
-Fichiers à modifier :
-- Le Makefile :
-	* Les chemins
+# If needed, cpoy OSG's .stl loader compiled library file in a folder where the linker is searching
+When installing OpenSceneGraph, the .stl loader is not necessarily placed inside a folder where the linker will search. You will need to do it manually.
 
-- interface.cpp
-	* Le chemin vers e.sh codé en dur ligne 19
+The static library file that we need to load .stl files is located in *OpenSceneGraph/build/lib/osgPlugins-3.7.0/* (*OpenSceneGraph/* is where you did your git clone https://github.com/openscenegraph/OpenSceneGraph). The static library is named osgdb_stld.so. 
 
-To make this project work I added to my PATH variable the absolute path to my osg shared library binary files (for me it is ~/developpement/OpenSceneGraph/build/lib). Also, since osg needs the plugin to open .stl objects, we need to give the specific shared object for that. I used the command : 
+If you tupe the command ld -l whatever --verbose, unless the library whatever actually exists which I suppose it doesn't, you get all the repositories in which your linker is searching when you ask him to link. You can choose which. I choose /usr/lib so I will place osgdb_stld.so there while renaming it : sudo cp <yours_to_fill>/OpenSceneGraph/build/lib/osgPlugins-3.7.0/osgdb_stld.so /usr/lib/libosgdb_stld.so.
+You could also create a symbolic link instead :
+<yours_to_fill>/OpenSceneGraph/build/lib/osgPlugins-3.7.0/osgdb_stld.so /usr/lib/libosgdb_stld.so
 
-$sudo ln -s ~/developpement/OpenSceneGraph/build/lib/osgPlugins-3.7.0/osgdb_stld.so /usr/lib/x86_64-linux-gnu/libosgdb_stld.so
-
-and linked the interface executable to the library osgdb_stld (see CMakeLists.txt in the subrepo /interface)
-
-Ne pas oublier de créer si nécessaire les variables d'environnement : 
-GTEST_ROOT (dans mon cas : $export GTEST_ROOT=~/developpement/googletest/googletest)
+You should be good. You can try typing ld -l osgdb_stld and ld should find it (it can still return an error even if it has found the file).
