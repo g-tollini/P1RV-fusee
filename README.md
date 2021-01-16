@@ -6,7 +6,7 @@ How to run the executables :
 
 Go in the folder of your choice and in the console, type :
 
-git clone https://github.com/g-tollini/P1RV-fusee  
+`$ git clone https://github.com/g-tollini/P1RV-fusee`  
 `$ cd P1RV-fusee` 
 `$ mkdir build && cd build`    
 `$ cmake ../ && make`  
