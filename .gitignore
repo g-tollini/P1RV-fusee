@@ -37,3 +37,9 @@
 # Cmake output directory
 build/
 CMakeModules/
+
+# Documentation
+doc/*.dvi
+doc/*.toc
+doc/*.aux
+doc/*.log
