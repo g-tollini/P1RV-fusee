@@ -136,6 +136,7 @@ void *simulationMainLoop(void *pData)
                 }
 
                 pSd->pShm->next_frame_ms -= step_ms;
+                pSd->sim_untill_ms -= step_ms;
 
                 pSolver->UpdateCommand(pSd);
                 pSolver->ComputeNextState(step_ms);
@@ -145,6 +146,10 @@ void *simulationMainLoop(void *pData)
                 pSd->pShm->attitude = pDynMod->getAttitude();
 
                 pSd->pShm->t_ms += step_ms;
+
+                string s = to_string(pSd->pShm->t_ms);
+                s.append(" ms total \n");
+                pSd->sharedBuffer->push_back(s);
             }
         }
     }
