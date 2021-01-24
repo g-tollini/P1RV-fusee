@@ -51,6 +51,8 @@ struct SharedMemory
     Vector3d position;
     Vector3d attitude;
     double booster_thrust;
+    double tvc_angle_1;
+    double tvc_angle_2;
 };
 
 /**

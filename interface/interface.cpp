@@ -254,14 +254,16 @@ bool StartDisplay(void)
 
     root->setUpdateCallback(new MyUpdateCallback());
 
-    osg::Camera *hudCamera = createHUD();
-    viewer.setUpViewAcrossAllScreens();
-    osgViewer::Viewer::Windows windows;
-    viewer.getWindows(windows);
-    hudCamera->setGraphicsContext(windows[0]);
-    hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+    // THERE IS A SEGMENTATION FAULT IN THERE
 
-    viewer.addSlave(hudCamera, false);
+    // osg::Camera *hudCamera = createHUD();
+    // viewer.setUpViewAcrossAllScreens();
+    // osgViewer::Viewer::Windows windows;
+    // viewer.getWindows(windows);
+    // hudCamera->setGraphicsContext(windows[0]);
+    // hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+
+    // viewer.addSlave(hudCamera, false);
 
     /* START VIEWER */
     //The viewer.run() method starts the threads and the traversals.

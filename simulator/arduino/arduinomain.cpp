@@ -22,13 +22,11 @@ void silent_delay(int delay_ms)
 
 void delay(int delay_ms)
 {
-    pSd->sim_untill_ms = delay_ms;
     string s = "Attendre ";
     s.append(to_string(delay_ms));
     s.append(" ms");
     pSd->sharedBuffer->push_back(s);
-    pthread_mutex_unlock(pSd->simulationMutex);
-    pthread_mutex_lock(pSd->arduinoMutex);
+    silent_delay(delay_ms);
 
     return;
 }

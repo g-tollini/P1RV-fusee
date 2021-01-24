@@ -1,4 +1,5 @@
 #include "myserial.hpp"
+#include "../../myarduino.hpp"
 
 SerialObj::SerialObj(ostream &_os)
 {
@@ -7,7 +8,7 @@ SerialObj::SerialObj(ostream &_os)
 
 void SerialObj::begin(int _baud)
 {
-    if (_baud != 0)
+    if (_baud > 0)
     {
         baud = _baud;
     }
@@ -20,9 +21,7 @@ void SerialObj::begin(int _baud)
 
 void SerialObj::print(string const &s) const
 {
-    pSd->sim_untill_ms = int((double)s.size() / 9.6);
-    pthread_mutex_unlock(pSd->simulationMutex);
-    pthread_mutex_lock(pSd->arduinoMutex);
+    silent_delay((double)s.size() / 9.6);
     pSd->sharedBuffer->push_back(s);
 }
 

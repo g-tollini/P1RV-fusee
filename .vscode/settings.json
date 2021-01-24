@@ -27,7 +27,11 @@
         "string_view": "cpp",
         "graphicscontext": "cpp",
         "mixinvector": "cpp",
-        "fast_back_stack": "cpp"
+        "fast_back_stack": "cpp",
+        "array": "cpp",
+        "unordered_map": "cpp",
+        "initializer_list": "cpp",
+        "guieventadapter": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/."
 }
