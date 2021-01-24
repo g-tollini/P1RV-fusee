@@ -254,6 +254,8 @@ bool StartDisplay(void)
 
     root->setUpdateCallback(new MyUpdateCallback());
 
+    // THERE IS A SEGMENTATION FAULT IN THERE
+
     // osg::Camera *hudCamera = createHUD();
     // viewer.setUpViewAcrossAllScreens();
     // osgViewer::Viewer::Windows windows;
