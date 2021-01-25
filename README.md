@@ -1,5 +1,9 @@
 <h1>P1RV-fusee</h1>
 Simulateur de fusée en 3D
+3D rocket simulator
+
+I will be setting up a docker so that anyone can try out this project easily
+
 
 <h2>Installation</h2>
 How to run the executables :
