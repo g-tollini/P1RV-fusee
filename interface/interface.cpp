@@ -241,8 +241,8 @@ bool StartDisplay(void)
     cout << "backgrould.stl location : " << BACKGROUND_LOC << endl;
     ref_ptr<Node> terrainnode(osgDB::readNodeFile(BACKGROUND_LOC));
 #else
-    ref_ptr<Node> terrainnode(osgDB::readNodeFile("ressources/background.stl"));
-    cout << "background.stl location not defined" << endl;
+    ref_ptr<Node> terrainnode(osgDB::readNodeFile("background.stl"));
+    cout << "background.stl location not defined, searching in gui directory" << endl;
     exit(0);
 #endif
 

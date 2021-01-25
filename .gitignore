@@ -43,3 +43,6 @@ doc/*.dvi
 doc/*.toc
 doc/*.aux
 doc/*.log
+
+# docker
+docker/

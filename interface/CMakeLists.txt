@@ -2,8 +2,6 @@ set(EXEC_NAME P1RV-fusee-interface)
 
 cmake_minimum_required (VERSION 3.8) 
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 find_package(OpenThreads)
 find_package(osg)
 
@@ -49,3 +47,5 @@ elseif (${UNIX})
     ${OPENSCENEGRAPH_LIBRARIES}
     osgdb_stld)
 endif()
+
+message(${OPENSCENEGRAPH_LIBRARIES})
