@@ -1,6 +1,6 @@
 <h1>P1RV-fusee</h1>
-Simulateur de fusée en 3D, club de robotique NantRobot, Centrale Nantes
-3D rocket simulator
+3D rocket simulator  
+Simulateur de fusée en 3D, club de robotique NantRobot, Centrale Nantes  
 
 I am setting up a docker so that anyone can try out this project easily.
 
