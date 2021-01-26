@@ -14,6 +14,7 @@ typedef Eigen::Matrix3d cardan_rotation_t;
 class CardanModel : public DynamicModel
 {
 public:
+    CardanModel(SharedMemory *pShm);
     void ComputeStateDerivative(void);
     void ComputeNextState(double step_fraction);
     void LoadModelParameters(void);

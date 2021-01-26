@@ -52,7 +52,7 @@ void *simulationMainLoop(void *pData)
     {
     case Cardan:
         cout << "Dynamic model is : Cardan model" << endl;
-        pDynMod = new CardanModel();
+        pDynMod = new CardanModel(pSd->pShm);
         break;
     case Quaternions:
         cout << "Dynamic model is : Quaternions model" << endl;
@@ -83,10 +83,6 @@ void *simulationMainLoop(void *pData)
 
     // Initialise the state
     pDynMod->SetPosition(pSd->pShm->position);
-    pSd->pShm->attitude.x = 0;
-    pSd->pShm->attitude.y = M_PI / 4;
-    pSd->pShm->attitude.z = 0;
-
     pDynMod->SetAttitude(pSd->pShm->attitude);
 
     while (true)

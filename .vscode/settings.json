@@ -31,7 +31,8 @@
         "array": "cpp",
         "unordered_map": "cpp",
         "initializer_list": "cpp",
-        "guieventadapter": "cpp"
+        "guieventadapter": "cpp",
+        "matrix": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/."
 }

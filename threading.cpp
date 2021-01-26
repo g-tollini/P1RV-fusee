@@ -31,5 +31,10 @@ void SharedMemoryInit(SharedMemory *shm)
     shm->step_ms = 10;
     shm->t_ms = 0;
     shm->method = Method::methodEuler;
-    shm->model = Model::Simple;
+    shm->model = Model::Cardan;
+    shm->mass = 1.0;
+    shm->position = Vector3d{0, 0, 0};
+    shm->attitude = Vector3d{0, 0, 0};
+    shm->tvc_angle_1 = 0.0;
+    shm->tvc_angle_2 = 0.0;
 }

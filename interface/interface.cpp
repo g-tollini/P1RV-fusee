@@ -100,6 +100,7 @@ void SimulationHandler(int value)
         shm->next_frame_ms = 10;
 
         pat->setPosition(Vec3d(shm->position.x, shm->position.y, shm->position.z));
+        pat->setAttitude(osg::Quat(shm->attitude.x, shm->attitude.y, shm->attitude.z, 1.0));
 
         if (shm->simulationTerminated)
         {
