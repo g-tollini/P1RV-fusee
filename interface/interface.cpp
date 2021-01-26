@@ -69,13 +69,16 @@ class KeyboardHandler : public osgGA::GUIEventHandler
 public:
     virtual bool handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &)
     {
-        switch (ea.getKey())
+        if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
         {
-        case 'a':
-            StartSimulation();
-            break;
-        default:
-            break;
+            switch (ea.getKey())
+            {
+            case 'a':
+                StartSimulation();
+                break;
+            default:
+                break;
+            }
         }
         return false;
     }
