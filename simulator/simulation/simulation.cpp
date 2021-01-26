@@ -83,6 +83,10 @@ void *simulationMainLoop(void *pData)
 
     // Initialise the state
     pDynMod->SetPosition(pSd->pShm->position);
+    pSd->pShm->attitude.x = 0;
+    pSd->pShm->attitude.y = M_PI / 4;
+    pSd->pShm->attitude.z = 0;
+
     pDynMod->SetAttitude(pSd->pShm->attitude);
 
     while (true)
