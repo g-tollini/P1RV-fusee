@@ -21,8 +21,8 @@ You can start simulations without the gui, to do so type :
 
 If something goes wrong, I list below some solutions to problems that might have happened. I hope that you will find the solution that suits your situation.
 
-<h2>Compiling</h2>
-Logiciels requis :  
+<h2>Compilation</h2>
+Required tools :  
 make, g++  
 
 You can install everything you need to build this code with the build-essentials package :  
@@ -30,7 +30,7 @@ You can install everything you need to build this code with the build-essentials
 `$ sudo apt upgrade`  
 `$ sudo apt install build-essentials`  
 
-Bibliothèques requises :  
+Required libraries :  
 + OpenGL that you should alredy have on your computer  
 + Freeglut `$ sudo apt install freeglut3-dev`  
 + OpenSceneGraph to be found here : https://github.com/openscenegraph/OpenSceneGraph  
