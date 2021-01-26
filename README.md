@@ -1,11 +1,11 @@
 <h1>P1RV-fusee</h1>
-Simulateur de fusée en 3D
+Simulateur de fusée en 3D, club de robotique NantRobot, Centrale Nantes
 3D rocket simulator
 
 I am setting up a docker so that anyone can try out this project easily.
 
 
-<h2>Installation</h2>
+<h2>Install</h2>
 How to run the executables :
 
 Go in the folder of your choice and in the console, type :
@@ -21,7 +21,7 @@ You can start simulations without the gui, to do so type :
 
 If something goes wrong, I list below some solutions to problems that might have happened. I hope that you will find the solution that suits your situation.
 
-<h2>Compilation</h2>
+<h2>Compiling</h2>
 Logiciels requis :  
 make, g++  
 
