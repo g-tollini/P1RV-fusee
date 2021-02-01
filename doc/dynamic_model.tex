@@ -17,7 +17,14 @@
 
 \section*{Objective}
 \addcontentsline{toc}{section}{\protect\numberline{}Objective}
-This document aims at giving all the keys to understand the dynamics of an UAV.
+This document explains the steps I followed in order to choose and code my rocket dynamic model
+
+\newpage
+
+\section*{IMPORTANT}
+\addcontentsline{toc}{section}{\protect\numberline{}IMPORTANT}
+This model is wrong. The formula for torque is inexact. Further modifications will come soon
+
 
 \newpage
 
@@ -118,7 +125,68 @@ N
 
 \section{Equations of movement}
 
-$$\bm M_{RB}\cdot \bm \dot{\nu} + \bm C_{RB}\cdot \nu = \tau$$
+Newton's law gives :
+
+$$m\dot{\bm \nu}_1} = {\bm\tau}_1 + \vec{\bm F}_i + \vec{\bm F}_C$$ where ${\bm\tau}_1$ is the sum of forces, $\vec{\bm F}_i$ is the inertia fictitious force and $\vec{\bm F}_C$ the Coriolis fictitious force.
+
+which rewrites :
+
+
+$$m({\dot\bm\nu_1} + {\dot\bm{\nu}_2} \times\bm\nu_1) = {\bm\tau}_1$$
+
+and :
+
+$${\dot\bm\nu_1} = \frac{{\bm\tau}_1}{m} - {\bm{\nu}_2}\times\bm\nu_1$$
+
+Thus in the body-fixed reference frame we have :
+
+$$\left[
+\begin{array}{c}
+\dot \bm u\\
+\dot \bm v\\
+\dot \bm w
+\end{array}
+\right] =
+\left[
+\begin{array}{c}
+\frac{X}{m} - (qw - rv)\\
+\frac{Y}{m} - (ru - pw)\\
+\frac{Z}{m} - (pv - qu)
+\end{array}
+\right]$$
+
+And for the torques, using the inertia matrix relative to the center of mass $\bm I_G$, we have :
+
+$$\bm I_G {\dot\bm\nu_2} + {\bm\nu}_2\times\bm I_G \bm{\nu}_2) = {\bm\tau}_2$$
+
+with :
+
+$$\bm I_G =
+\left[
+\begin{array}{c c c}
+I_{x} & I_{xy} & I_{xz} \\
+I_{xy} & I_{y} & I_{yz} \\
+I_{xz} & I_{yz} & I_{z}
+\end{array}\right]$$
+
+With only $I_{xx}$, $I_{yy}$ and $I_{zz}$ not null.
+
+Thus in the body-fixed reference frame we have :
+
+$$\left[
+\begin{array}{c}
+\dot \bm p\\
+\dot \bm q\\
+\dot \bm r
+\end{array}
+\right] =
+\left[
+\begin{array}{c}
+\frac{K}{I_x} - qr(I_z-I_y)\\
+\frac{M}{I_y} - rp(I_x - I_z)\\
+\frac{N}{I_z} - pq(I_y - I_x)
+\end{array}
+\right]$$
 
 \section{Forces}
 
@@ -133,39 +201,25 @@ The vector $\bm \tau$ of forces and moments can be decomposed into several vecto
 \subsubsection{Weight}
 
 $\bm W$ is the weight vector of the rocket.
-Then $\bm W_{\mathcal{B}} = \bm W|{\bm x\bm y\bm z} = [-m.g \; 0 \; 0]^T$ ($\bm x$ is upwards).
+Then $\bm W_{\mathcal{B}} = \bm W|{\bm x\bm y\bm z} = [0 \; 0 \; -mg]^T$ ($\bm z$ is upwards).
 Since $\bm W|{\bm x\bm y\bm z} = \bm J_1\cdot \bm W|_{\mathcal{B}}$, 
-then $\bm W|{\bm x\bm y\bm z} = \bm J_1^{-1}\cdot \bm W|_{\mathcal{B}}$.
-And because $\bm J_1$ is orthogonal, $\bm J_1^{-1} = \bm J_1^T$. So we have :
+and because $\bm J_1$ is orthogonal we have $\bm W|_{\mathcal{B}} = \bm J_1^{T}\cdot [0 \; 0 \; -mg]^T$.
 
-$$\begin{array}{l l}
-\bm {\tau}_G|_{\mathcal{B}} & = \left[
-\begin{array}{c}
-\bm J_1^T\cdot(\bm W|_{\mathcal{B}} + \bm B|_{\mathcal{B}})	\\
-\bm r_G\times\bm J_1^T\cdot\bm W|_{\mathcal{B}} + \bm r_B\times\bm J_1^T\cdot\bm B|_{\mathcal{B}})
-\end{array}
-\right]	\\ 
-& \\
-& = \left[
-\begin{array}{c}
-\bm J_1^T\cdot(\bm W|_{\mathcal{B}} + \bm B|_{\mathcal{B}})	\\
-\bm S(r_G)\cdot\bm J_1^T\cdot\bm W|_{\mathcal{B}} + \bm S(\bm r_B)\cdot\bm J_1^T\cdot\bm B|_{\mathcal{B}}
-\end{array}\right]\end{array}$$
-\end{array}
-\right]$$
+The weight gives no angular momentum.
 
 \subsection{Drag}
 
+Let us say for now that these are negligible.
 
 \subsection{Thrust vector control}
 
-Let us call $T$ the norm of the thrust vector (which is the action of thrust on the rocket). We rotate the rocket-fixed reference frame $\bm{xyz}$ of an angle $\alpha_1$ about $\bm y$ and
-name the new reference frame $\bm{x'yz'}$. We then rotate this reference frame of an angle $\alpha_2$ about $\bm z'$ and we get the reference frame
-$\bm{x''y'z'}$. $\bm x''$ is the vector carrying th thrust vector. $\alpha_1$ and $\alpha_2$ are the two command angles.
+Let us call $T$ the norm of the thrust vector (which is the action of thrust on the rocket). We rotate the rocket-fixed reference frame $\bm{XYZ}$ of an angle $\alpha_1$ about $\bm x$ and
+name the new reference frame $\bm{x'yz'}$. We then rotate this reference frame of an angle $\alpha_2$ about $\bm y'$ and we get the reference frame
+$\bm{X'Y'Z''}$. $\bm Z''$ is the vector carrying th thrust vector. $\alpha_1$ and $\alpha_2$ are the two command angles.
 
 We have :
 
-$$\bm{\tau}_C = T \bm x'' = \bm R_Z(\alpha_2) \cdot \bm R_Y(\alpha_1) \cdot \left[\begin{array}{c} T \\ 0 \\ 0 \end{array}\right]$$
+$$\bm{\tau}_C = -T \bm Z'' = \bm R_Z(\alpha_2) \cdot \bm R_Y(\alpha_1) \cdot \left[\begin{array}{c} 0 \\ 0 \\ Y \end{array}\right]$$
 
 
 

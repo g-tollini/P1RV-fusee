@@ -35,6 +35,6 @@ void SharedMemoryInit(SharedMemory *shm)
     shm->mass = 1.0;
     shm->position = Vector3d{0, 0, 0};
     shm->attitude = Vector3d{0, 0, 0};
-    shm->tvc_angle_1 = 0.0;
+    shm->tvc_angle_1 = M_PI / 8.0;
     shm->tvc_angle_2 = 0.0;
 }

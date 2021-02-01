@@ -2,23 +2,20 @@
 
 #include "cardan-model.hpp"
 
-Eigen::Matrix<double, 6, 6> MRB(double mass)
-{
-    Eigen::Matrix<double, 6, 6> out = Eigen::MatrixXd::Zero(6, 6);
-    out.block<3, 3>(0, 0) = mass * Eigen::MatrixXd::Identity(3, 3);
-    out.block<3, 3>(3, 3) = mass / 3 * Eigen::MatrixXd::Identity(3, 3);
-    out(5, 5) = mass / 10;
-
-    return out;
-}
-
 double mass = 0;
-Eigen::Matrix<double, 6, 6> m_rb = Eigen::MatrixXd::Zero(6, 6);
+Eigen::Matrix<double, 3, 3> inertiaMatrix = Eigen::MatrixXd::Zero(3, 3);
 
 CardanModel::CardanModel(SharedMemory *pShm)
 {
-    mass = max(pShm->mass, 1.0);
-    m_rb = MRB(pShm->mass);
+
+    state = Eigen::MatrixXd::Zero(12, 1);
+    dStatedt = Eigen::MatrixXd::Zero(12, 1);
+    mass = pShm->mass;
+    double L = 1.0;
+    double r = 0.1;
+    inertiaMatrix.block<1, 1>(0, 0) << (1.0 / 12.0) * mass * L * L;
+    inertiaMatrix.block<1, 1>(1, 1) << inertiaMatrix(0, 0);
+    inertiaMatrix.block<1, 1>(2, 2) << (1.0 / 2.0) * mass * r * r;
 }
 
 inline cardan_rotation_t Rx(double angle)
@@ -64,16 +61,9 @@ cardan_action_t TauG(cardan_rotation_t const &j1, cardan_state_t const &state)
     return tauG;
 }
 
-cardan_action_t TauATilde(cardan_state_t const &state)
-{
-    cardan_action_t dStatedt;
-
-    return dStatedt;
-}
-
 cardan_action_t TauD(cardan_state_t const &state)
 {
-    cardan_action_t tauD;
+    cardan_action_t tauD = Eigen::MatrixXd::Zero(6, 1);
 
     return tauD;
 }
@@ -84,81 +74,30 @@ cardan_action_t TauC(cardan_state_t const &state, cardan_command_t const &comman
     tauC.block<3, 1>(0, 0) << 0, 0, command(0);
     tauC.block<3, 1>(0, 0) = Ry(command(2)) * Rx(command(1)) * tauC.block<3, 1>(0, 0);
     Eigen::Vector3d nozzle;
-    nozzle << -0.50, 0, 0;
+    nozzle << 0, 0, -0.5;
     tauC.block<3, 1>(3, 0) = S(nozzle) * tauC.block<3, 1>(0, 0);
 
     return tauC;
 }
 
-Eigen::Matrix<double, 6, 6> RBCoriolisMatrix(
-    const Eigen::Matrix<double, 6, 1> &nu)
-{
-    // Before m_C_A is computed at step n, the following elements must have been
-    // computed for step n : M_RB, nu
-    // M_RB is computed only 1 time which is during the initialization
-    Eigen::Matrix<double, 6, 6> out;
-    out.block<3, 3>(0, 0) = Eigen::MatrixXd::Zero(3, 3);
-    out.block<3, 3>(0, 3) = -S(m_rb.block<3, 3>(0, 0) * nu.block<3, 1>(0, 0) +
-                               m_rb.block<3, 3>(0, 3) * nu.block<3, 1>(3, 0));
-    out.block<3, 3>(3, 0) = out.block<3, 3>(0, 3);
-    out.block<3, 3>(3, 3) = -S(m_rb.block<3, 3>(3, 0) * nu.block<3, 1>(0, 0) +
-                               m_rb.block<3, 3>(3, 3) * nu.block<3, 1>(3, 0));
-    return out;
-}
-
-/*
-Eigen::Matrix<double, 6, 6> RBCoriolisMatrix2(
-    const Eigen::Matrix<double, 6, 1> &nu)
-{
-    // Before m_C_A is computed at step n, the following elements must have been
-    // computed for step n : M_RB, nu
-    // M_RB is computed only 1 time which is during the initialization
-    Eigen::Matrix<double, 6, 6> out;
-    out.block<3, 3>(0, 0) = Eigen::MatrixXd::Zero(3, 3);
-    out.block<3, 3>(0, 3) = -m_mass * S(nu.block<3, 1>(0, 0));
-    out.block<3, 3>(3, 0) = Eigen::MatrixXd::Zero(3, 3);
-    out.block<3, 3>(3, 3) = -m_mass * S(m_r_g) * S(nu.block<3, 1>(0, 0));
-    return out;
-}
-*/
-
-/*
-Eigen::Matrix<double, 6, 6> D(
-    const Eigen::Matrix<double, 6, 1> &nu, const double &depth)
-{
-    // Before m_D is computed at step n, the following elements must have
-    // been computed for step n : m_X_u, m_Y_v, m_Z_w, m_K_p, m_M_q, m_N_r,
-    // m_X_u_u, m_Y_v_v, m_Z_w_w, m_K_p_p, m_M_q_q, m_N_r_r and their dependancies
-    // m_X_u, m_Y_v, m_Z_w, m_K_p, m_M_q, m_N_r are computed only 1 time which is
-    // during the initialization
-    Eigen::Matrix<double, 6, 6> out = Eigen::MatrixXd::Zero(6, 6);
-
-    return out;
-}
-*/
-
-#include <iostream>
-
 void CardanModel::ComputeStateDerivative(void)
 {
-    cout << "state : " << state(6, 0) << " " << state(7, 0) << " " << state(8, 0) << endl;
-    cardan_rotation_t j_1 =
+    cardan_rotation_t j1 =
         Rz(state(11, 0)) * Ry(state(10, 0)) * Rx(state(9, 0));
-    cardan_rotation_t j_2;
-
-    j_2 << 1.0, sin(state(9, 0)) * tan(state(10, 0)),
+    cardan_rotation_t j2;
+    j2 << 1.0, sin(state(9, 0)) * tan(state(10, 0)),
         cos(state(9, 0)) * tan(state(10, 0)), 0.0, cos(state(9, 0)),
         -sin(state(9, 0)), 0, sin(state(9, 0)) / cos(state(10, 0)),
         cos(state(9, 0)) / cos(state(10, 0));
 
     cardan_action_t nu = state.block<6, 1>(0, 0);
 
-    cardan_action_t tau_tilde = TauG(j_1, state) + TauC(state, command);
+    cardan_action_t tau = TauG(j1, state) + TauD(state) + TauC(state, command);
 
-    dStatedt.block<6, 1>(0, 0) =
-        m_rb.inverse() * (tau_tilde - RBCoriolisMatrix(nu) * nu);
-    dStatedt.block<3, 1>(6, 0) = j_1 * nu.block<3, 1>(0, 0);
-    dStatedt.block<3, 1>(9, 0) = j_2 * nu.block<3, 1>(3, 0);
+    dStatedt.block<3, 1>(0, 0) = (1 / mass) * tau.block<3, 1>(0, 0) - S(nu.block<3, 1>(0, 0)) * nu.block<3, 1>(0, 0);
+    dStatedt.block<3, 1>(3, 0) = inertiaMatrix.inverse() * (tau.block<3, 1>(3, 0) - S(nu.block<3, 1>(3, 0)) * (inertiaMatrix * nu.block<3, 1>(3, 0)));
+    dStatedt.block<3, 1>(6, 0) = j1 * dStatedt.block<3, 1>(0, 0);
+    dStatedt.block<3, 1>(9, 0) = j2 * dStatedt.block<3, 1>(3, 0);
 }
 
 void CardanModel::ComputeNextState(double step_fraction)
@@ -201,7 +140,7 @@ void CardanModel::SetAttitude(Vector3d attitude)
 
 void CardanModel::UpdateCommand(SimulationData *pSd)
 {
-    command(0) = 9.8; //pSd->pShm->booster_thrust;
+    command(0) = 20; //pSd->pShm->booster_thrust;
     command(1) = pSd->pShm->tvc_angle_1;
     command(2) = pSd->pShm->tvc_angle_2;
 }

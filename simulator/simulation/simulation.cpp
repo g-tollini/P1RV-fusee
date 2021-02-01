@@ -47,6 +47,8 @@ void *simulationMainLoop(void *pData)
         }
     }
 
+    pSd->pShm->model = Model::Cardan;
+
     DynamicModel *pDynMod;
     switch (pSd->pShm->model)
     {
