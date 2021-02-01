@@ -3,8 +3,9 @@
 
 Simulateur de fusée en 3D, club de robotique NantRobot, Centrale Nantes  
 
-I am setting up a docker so that anyone can try out this project easily.
+In the coming versions, I will be switching to a WebGL interface for easier deployment.
 
+As soon as this is done I will set up a docker so that anyone can try out this project in a few clicks.
 
 <h2>Install</h2>
 How to run the executables :
